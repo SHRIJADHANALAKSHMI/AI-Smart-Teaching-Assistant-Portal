@@ -25,7 +25,7 @@ An AI-powered platform that helps faculty members create lecture materials, summ
 ### Backend
 
 - Java 21
-- Spring Boot 3
+- Spring Boot 4.1.0
 - Spring Security
 - JWT Authentication
 
