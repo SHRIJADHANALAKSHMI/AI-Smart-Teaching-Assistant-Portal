@@ -2,8 +2,10 @@ import React from "react";
 import {FaUniversity,FaUserTie,FaUser,FaRobot,FaBars,FaPlus,
   FaCog, FaChartLine,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function SuperAdminDashboard() {
+  const navigate = useNavigate();
   const stats = [
     {
       title: "Total Colleges",
@@ -91,32 +93,36 @@ export default function SuperAdminDashboard() {
         <h2 className="text-2xl font-bold mb-6">STA Portal</h2>
 
         <ul className="space-y-3">
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+           <li onClick={() => navigate("/superadmin")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaBars />
             Dashboard
           </li>
 
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+          <li onClick={() => navigate("/superadmin/colleges")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaPlus />
             Add College
           </li>
 
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+          <li onClick={() => navigate("/superadmin/analytics")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaChartLine />
             Analytics
           </li>
 
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+          <li onClick={() => navigate("/superadmin/ai-monitoring")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaRobot />
             AI Monitoring
           </li>
 
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+          <li onClick={() => navigate("/superadmin/invite-college")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+            <FaCog />
+            Invite College Admin
+          </li>
+          <li onclick={() => navigate("/superadmin/settings")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaCog />
             Settings
           </li>
 
-          <li className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
+          <li onClick={() => navigate("/superadmin/logout")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
             <FaUserTie />
             Logout
           </li>
@@ -159,15 +165,15 @@ export default function SuperAdminDashboard() {
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button className="bg-blue-500 text-white p-4 rounded-lg shadow hover:bg-blue-600 transition">
+              <button onClick = {() => navigate("/superadmin/colleges")} className="bg-blue-500 text-white p-4 rounded-lg shadow hover:bg-blue-600 transition">
                 Add College
               </button>
 
-              <button className="bg-green-500 text-white p-4 rounded-lg shadow hover:bg-green-600 transition">
+              <button onClick = {() => navigate("/superadmin/invite-college")} className="bg-green-500 text-white p-4 rounded-lg shadow hover:bg-green-600 transition">
                 Invite College Admin
               </button>
 
-              <button className="bg-yellow-500 text-white p-4 rounded-lg shadow hover:bg-yellow-600 transition">
+              <button onClick = {() => navigate("/superadmin/ai-monitoring")} className="bg-yellow-500 text-white p-4 rounded-lg shadow hover:bg-yellow-600 transition">
                 View AI Requests
               </button>
             </div>
