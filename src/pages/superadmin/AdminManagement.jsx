@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 
 const initialAdmins = [
-  {id:1,name:"John David",college:"ABC Engineering College",email:"john@abc.edu",phone:"9876543210",status:"Active",role:"College Admin",lastLogin:"Today 10:30 AM"},
+  {id:1,name:"shri",college:"ABC Engineering College",email:"john@abc.edu",phone:"9876543210",status:"Active",role:"College Admin",lastLogin:"Today 10:30 AM"},
   {id:2,name:"Priya Sharma",college:"XYZ Institute",email:"priya@xyz.edu",phone:"9123456789",status:"Pending",role:"College Admin",lastLogin:"-"},
   {id:3,name:"Arun Kumar",college:"National College",email:"arun@nc.edu",phone:"9988776655",status:"Inactive",role:"College Admin",lastLogin:"Yesterday"},
 ];
