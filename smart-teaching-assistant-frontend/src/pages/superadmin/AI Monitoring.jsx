@@ -82,8 +82,6 @@ export default function AIMonitoring() {
           Monitor AI usage, generated content, and educational insights.
         </p>
       </div>
-
-      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {cards.map((card, index) => (
           <div
@@ -108,7 +106,6 @@ export default function AIMonitoring() {
         ))}
       </div>
 
-      {/* AI Health */}
       <div className="grid lg:grid-cols-2 gap-6 mt-8">
 
         <div className="bg-white rounded-2xl shadow-md p-6">
@@ -175,7 +172,7 @@ export default function AIMonitoring() {
 
       </div>
 
-      {/* Recent AI Activities */}
+   
       <div className="bg-white rounded-2xl shadow-md mt-8 p-6">
 
         <h2 className="text-xl font-semibold mb-5">
@@ -215,7 +212,6 @@ export default function AIMonitoring() {
 
       </div>
 
-      {/* Alerts */}
       <div className="grid md:grid-cols-2 gap-6 mt-8">
 
         <div className="bg-red-50 border border-red-200 rounded-xl p-5">
