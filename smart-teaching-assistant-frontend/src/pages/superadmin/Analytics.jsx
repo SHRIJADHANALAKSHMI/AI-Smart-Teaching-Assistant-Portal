@@ -68,6 +68,7 @@ export default function Analytics() {
         Platform Analytics
       </h1>
 
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
         {stats.map((item, index) => (
@@ -97,6 +98,7 @@ export default function Analytics() {
 
       </div>
 
+      {/* Recent Activity */}
       <div className="mt-10 bg-white rounded-2xl shadow-md p-6">
 
         <h2 className="text-xl font-semibold mb-5">
@@ -145,6 +147,7 @@ export default function Analytics() {
 
       </div>
 
+      {/* Platform Overview */}
       <div className="mt-10 grid lg:grid-cols-2 gap-6">
 
         <div className="bg-white rounded-2xl shadow-md p-6">

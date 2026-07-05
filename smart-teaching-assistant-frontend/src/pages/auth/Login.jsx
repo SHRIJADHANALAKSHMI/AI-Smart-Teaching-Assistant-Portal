@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {FaEye, FaEyeSlash,FaGraduationCap,FaEnvelope,FaLock,
-  FaUserShield,} from "react-icons/fa";
+import {
+  FaEye, FaEyeSlash, FaGraduationCap, FaEnvelope, FaLock,
+  FaUserShield,
+} from "react-icons/fa";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -36,7 +38,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      console.log({ email, password, role, remember,
+      console.log({
+        email, password, role, remember,
       });
 
       setTimeout(() => {
@@ -45,7 +48,7 @@ export default function Login() {
         if (role === "superadmin") {
           navigate("/superadmin");
         } else if (role === "admin") {
-          navigate("/admin");
+          navigate("/collegeadmin");
         } else {
           navigate("/professor");
         }
@@ -60,7 +63,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-gray-100">
-      
+
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-700 via-indigo-800 to-purple-900 text-white p-14 flex-col justify-center">
 
         <h1 className="text-5xl font-bold leading-tight mb-6">
@@ -74,19 +77,19 @@ export default function Login() {
 
         <div className="space-y-4">
           <div className="bg-white/10 p-4 rounded-2xl">
-             AI Generated Notes & Summaries
+            AI Generated Notes & Summaries
           </div>
 
           <div className="bg-white/10 p-4 rounded-2xl">
-             Important Topic Identification
+            Important Topic Identification
           </div>
 
           <div className="bg-white/10 p-4 rounded-2xl">
-             Automated Assessment Generation
+            Automated Assessment Generation
           </div>
 
           <div className="bg-white/10 p-4 rounded-2xl">
-             Career Mapping & Learning Roadmaps
+            Career Mapping & Learning Roadmaps
           </div>
         </div>
       </div>
@@ -166,7 +169,7 @@ export default function Login() {
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"  />
+                  className="w-full border rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
                 <button
                   type="button"
