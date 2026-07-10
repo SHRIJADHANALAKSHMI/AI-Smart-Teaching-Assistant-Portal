@@ -1,16 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-// Auth
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
-
-// Super Admin
-import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
-import Colleges from "../pages/superadmin/Colleges";
-import AIMonitoring from "../pages/superadmin/AIMonitoring";
-import Analytics from "../pages/superadmin/Analytics";
-import InviteCollege from "../pages/superadmin/InviteCollegeAdmin";
-
 // College Admin Layout
 import CollegeAdminLayout from "../components/collegeadmin/Layout/CollegeAdminLayout";
 
@@ -21,44 +10,86 @@ import Subjects from "../pages/collegeadmin/Subjects";
 import Professor from "../pages/collegeadmin/Professor";
 import Reports from "../pages/collegeadmin/Reports";
 import CollegeProfile from "../pages/collegeadmin/CollegeProfile";
-import Settings from "../pages/collegeadmin/Settings";
+import CollegeSettings from "../pages/collegeadmin/Settings";
 import Notifications from "../pages/collegeadmin/Notifications";
-import CollegeAnalytics from "../pages/collegeadmin/AIAnalytics"; // We will rename this page later, using it for Analytics for now
+import CollegeAnalytics from "../pages/collegeadmin/AIAnalytics";
+
+// Professor Layout & Pages
+import ProfessorLayout from "../components/professor/layout/ProfessorLayout";
+import ProfessorDashboard from "../pages/professor/ProfessorDashboard";
+import MySubjects from "../pages/professor/MySubjects";
+import ChapterWorkspace from "../pages/professor/ChapterWorkspace";
+import UploadMaterial from "../pages/professor/UploadMaterial";
+import Assessments from "../pages/professor/Assessments";
+import ProfessorProfile from "../pages/professor/Profile";
+import AINotesGenerator from "../pages/professor/AINotesGenerator";
+import AIResult from "../pages/professor/AIResult";
+import AIProcessing from "../pages/professor/AIProcessing";
+import AIHistory from "../pages/professor/AIHistory";
+import Analytics from "../pages/professor/Analytics";
+import Settings from "../pages/professor/Settings";
+
+// Placeholder specifically for new routes we added to sidebar
+import { GenericPagePlaceholder } from "../components/professor/layout/GenericPagePlaceholder";
+
+import { useParams } from "react-router-dom";
+
+const LegacyWorkspaceRedirect = () => {
+  const { subjectId } = useParams();
+  return <Navigate to={`/professor/workspace/${subjectId}/ch1`} replace />;
+};
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Login */}
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      {/* Super Admin */}
-      <Route path="/superadmin" element={<SuperAdminDashboard />} />
-      <Route path="/superadmin/colleges" element={<Colleges />} />
-      <Route path="/superadmin/ai-monitoring" element={<AIMonitoring />} />
-      <Route path="/superadmin/analytics" element={<Analytics />} />
-      <Route path="/superadmin/invite-college" element={<InviteCollege />} />
+      {/* Fallback to professor */}
+      <Route path="/" element={<Navigate to="/professor/dashboard" replace />} />
 
       {/* College Admin */}
       <Route path="/collegeadmin" element={<CollegeAdminLayout />}>
-        {/* The index route for /collegeadmin */}
         <Route index element={<Dashboard />} />
-
         <Route path="departments" element={<Department />} />
         <Route path="subjects" element={<Subjects />} />
         <Route path="professors" element={<Professor />} />
         <Route path="reports" element={<Reports />} />
         <Route path="analytics" element={<CollegeAnalytics />} />
         <Route path="profile" element={<CollegeProfile />} />
-        <Route path="settings" element={<Settings />} />
+        <Route path="settings" element={<CollegeSettings />} />
         <Route path="notifications" element={<Notifications />} />
-
-        {/* Fallback for bad /collegeadmin routes */}
         <Route path="*" element={<Navigate to="/collegeadmin" replace />} />
       </Route>
 
+      {/* Professor Portal */}
+      <Route path="/professor" element={<ProfessorLayout />}>
+        {/* We redirect base /professor to dashboard */}
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<ProfessorDashboard />} />
+
+        <Route path="subjects" element={<MySubjects />} />
+        <Route path="workspace/:subjectId/process" element={<AIProcessing />} />
+        <Route path="workspace/:subjectId/:chapterId" element={<ChapterWorkspace />} />
+        {/* Fallback old workspace route if needed */}
+        <Route path="subjects/:subjectId" element={<LegacyWorkspaceRedirect />} />
+
+        <Route path="upload" element={<UploadMaterial />} />
+
+        {/* Sidebar specific routes */}
+        <Route path="ai-history" element={<AIHistory />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="settings" element={<Settings />} />
+
+        {/* Pre-existing routes mapped */}
+        <Route path="assessments" element={<Assessments />} />
+        <Route path="profile" element={<ProfessorProfile />} />
+        <Route path="ai-notes" element={<AINotesGenerator />} />
+        <Route path="ai-result" element={<AIResult />} />
+
+        {/* Fallback for bad /professor routes */}
+        <Route path="*" element={<Navigate to="/professor/dashboard" replace />} />
+      </Route>
+
       {/* Global Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/professor/dashboard" replace />} />
     </Routes>
   );
 }

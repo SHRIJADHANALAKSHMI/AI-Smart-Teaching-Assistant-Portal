@@ -29,7 +29,7 @@ export default function DashBoard() {
               <ShieldCheck size={14} />
               Enterprise Admin Portal
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">{collegeProfile.name} Overview</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">ABC college Overview</h1>
             <p className="text-blue-200 text-lg max-w-xl leading-relaxed">
               Academic Year 2026-2027 • Current Semester: Odd
             </p>
