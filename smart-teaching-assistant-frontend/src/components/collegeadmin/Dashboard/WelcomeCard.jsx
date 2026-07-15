@@ -27,7 +27,7 @@ export default function WelcomeCard() {
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-700 via-blue-600 to-cyan-500 text-white shadow-2xl"
+      className="relative overflow-hidden rounded-[24px] bg-gradient-to-tr from-emerald-800 via-teal-700 to-emerald-600 text-white shadow-[0_8px_30px_rgba(16,185,129,0.25)]"
     >
       {/* Background Blur */}
 
@@ -87,7 +87,7 @@ export default function WelcomeCard() {
 
               </div>
 
-              <p className="text-sm mt-4 text-blue-100">
+              <p className="text-sm mt-4 text-emerald-50">
 
                 AI Accuracy
 
@@ -111,7 +111,7 @@ export default function WelcomeCard() {
 
               </div>
 
-              <p className="text-sm mt-4 text-blue-100">
+              <p className="text-sm mt-4 text-emerald-50">
 
                 Active Professors
 

@@ -62,7 +62,7 @@ export default function PresentationTab() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Main Slide Viewer */}
-                <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col h-[500px]">
+                <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col">
                     <div className="flex-1 p-10 flex flex-col justify-center items-center bg-gray-50 relative">
                         <motion.div
                             key={slide.id}
@@ -103,7 +103,7 @@ export default function PresentationTab() {
                 </div>
 
                 {/* Slide Previews */}
-                <div className="lg:col-span-1 bg-white border border-gray-200 rounded-2xl p-4 overflow-y-auto h-[500px] flex flex-col gap-3 custom-scrollbar">
+                <div className="lg:col-span-1 bg-white border border-gray-200 rounded-2xl p-4 flex flex-col gap-3">
                     <h3 className="font-semibold text-gray-800 text-sm mb-2 uppercase tracking-wider">Slide Previews</h3>
                     {presentation.slides.map((s, idx) => (
                         <button

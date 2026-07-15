@@ -8,45 +8,46 @@ export default function DashBoard() {
   const navigate = useNavigate();
   const { stats, collegeProfile, notifications } = useCollegeAdmin();
 
+  // Premium accent combinations for cards
   const statCards = [
-    { title: "Departments", value: stats.totalDepartments, icon: Building2, color: "from-blue-500 to-blue-600", bg: "bg-blue-50 text-blue-600", path: "/collegeadmin/departments" },
-    { title: "Professors", value: stats.totalProfessors, icon: GraduationCap, color: "from-emerald-500 to-emerald-600", bg: "bg-emerald-50 text-emerald-600", path: "/collegeadmin/professors" },
-    { title: "Subjects", value: stats.totalSubjects, icon: BookOpen, color: "from-sky-500 to-sky-600", bg: "bg-sky-50 text-sky-600", path: "/collegeadmin/subjects" },
-    { title: "Reports Generated", value: stats.reportsGenerated || 890, icon: FileBarChart2, color: "from-slate-500 to-slate-600", bg: "bg-slate-100 text-slate-700", path: "/collegeadmin/reports" },
+    { title: "Departments", value: stats.totalDepartments, icon: Building2, gradient: "from-emerald-500 to-emerald-600", bg: "bg-emerald-50", text: "text-emerald-700", path: "/collegeadmin/departments" },
+    { title: "Professors", value: stats.totalProfessors, icon: GraduationCap, gradient: "from-purple-500 to-purple-600", bg: "bg-purple-50", text: "text-purple-700", path: "/collegeadmin/professors" },
+    { title: "Subjects", value: stats.totalSubjects, icon: BookOpen, gradient: "from-orange-500 to-orange-600", bg: "bg-orange-50", text: "text-orange-700", path: "/collegeadmin/subjects" },
+    { title: "Reports Generated", value: stats.reportsGenerated || 890, icon: FileBarChart2, gradient: "from-rose-500 to-rose-600", bg: "bg-rose-50", text: "text-rose-700", path: "/collegeadmin/reports" },
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6 pb-12">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="space-y-6 pb-12 w-full">
 
       {/* Welcome Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white p-8 md:p-10 shadow-xl">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-[24px] bg-white border border-[#E5E7EB] p-8 md:p-10 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md duration-300">
+        <div className="absolute top-[-50%] right-[10%] w-96 h-96 bg-emerald-100/50 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[-50%] left-[10%] w-80 h-80 bg-orange-100/30 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-blue-100 text-sm font-semibold mb-4 backdrop-blur-md border border-white/10">
-              <ShieldCheck size={14} />
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full text-slate-600 text-sm font-semibold mb-5 border border-slate-200">
+              <ShieldCheck size={16} className="text-emerald-600" />
               Enterprise Admin Portal
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight">ABC college Overview</h1>
-            <p className="text-blue-200 text-lg max-w-xl leading-relaxed">
-              Academic Year 2026-2027 • Current Semester: Odd
+            <h1 className="text-3xl md:text-[40px] font-extrabold mb-3 tracking-tight text-slate-900 leading-tight">ABC College Overview</h1>
+            <p className="text-slate-500 text-lg max-w-xl font-medium">
+              Academic Year 2026-2027 • <span className="text-emerald-600 font-semibold px-2 py-0.5 bg-emerald-50 rounded-md">Current Semester: Odd</span>
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <button onClick={() => navigate("/collegeadmin/reports")} className="bg-white text-blue-900 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl">
-              Generate Report
-            </button>
-            <button onClick={() => navigate("/collegeadmin/settings")} className="bg-blue-700/50 hover:bg-blue-600/50 text-white backdrop-blur-md border border-white/20 px-6 py-3 rounded-xl font-bold transition-all">
+            <button onClick={() => navigate("/collegeadmin/settings")} className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-6 py-3.5 rounded-[16px] font-bold transition-all shadow-sm">
               Manage Settings
+            </button>
+            <button onClick={() => navigate("/collegeadmin/reports")} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-6 py-3.5 rounded-[16px] font-bold transition-all shadow-sm hover:shadow-md">
+              Generate Report
             </button>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, idx) => (
           <motion.div
             key={stat.title}
@@ -54,13 +55,13 @@ export default function DashBoard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group cursor-pointer"
+            className="bg-white rounded-[24px] p-7 shadow-sm border border-[#E5E7EB] hover:-translate-y-1 hover:shadow-md hover:border-slate-300 transition-all group cursor-pointer"
           >
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${stat.bg} dark:bg-slate-800/50 transition-transform group-hover:scale-110`}>
-              <stat.icon size={24} className="dark:text-blue-400" />
+            <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center mb-6 bg-gradient-to-br ${stat.gradient} text-white shadow-sm transition-transform duration-300 group-hover:scale-[1.15]`}>
+              <stat.icon size={26} strokeWidth={2.5} />
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{stat.title}</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 dark:text-white">{stat.value.toLocaleString()}</h3>
+            <p className="text-slate-500 text-[13px] font-bold uppercase tracking-widest mb-2">{stat.title}</p>
+            <h3 className="text-4xl font-extrabold text-slate-900 tracking-tight">{stat.value.toLocaleString()}</h3>
           </motion.div>
         ))}
       </div>
@@ -69,10 +70,10 @@ export default function DashBoard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Charts Section */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">College Analytics</h2>
-            <select className="bg-slate-50 dark:bg-slate-800 border-none text-sm font-medium rounded-lg px-3 py-1.5 focus:ring-0 cursor-pointer text-slate-600 dark:text-slate-300">
+        <div className="lg:col-span-2 bg-white rounded-[24px] shadow-sm border border-[#E5E7EB] p-8 flex flex-col hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">College Analytics</h2>
+            <select className="bg-slate-50 border border-slate-200 text-sm font-semibold rounded-[12px] px-4 py-2 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer text-slate-600 outline-none transition-all hover:bg-slate-100">
               <option>This Week</option>
               <option>This Month</option>
               <option>This Semester</option>
@@ -86,50 +87,60 @@ export default function DashBoard() {
         {/* Right Sidebar Area */}
         <div className="space-y-6">
           {/* Recent Activities Widget */}
-          <div className="bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-3xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 text-slate-200 dark:text-slate-700/30 pointer-events-none">
-              <Activity size={100} />
+          <div className="bg-white rounded-[24px] p-7 border border-[#E5E7EB] shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute -right-10 -top-10 text-slate-50 opacity-50 pointer-events-none transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110">
+              <Activity size={180} />
             </div>
             <div className="relative z-10 w-full h-full flex flex-col">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Activity size={18} className="text-emerald-600 dark:text-emerald-400" />
-                  <h3 className="font-bold text-slate-800 dark:text-white">Recent Updates</h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-50 rounded-[10px]">
+                    <Activity size={20} className="text-emerald-600" />
+                  </div>
+                  <h3 className="font-bold text-slate-900 text-lg">Recent Updates</h3>
                 </div>
               </div>
-              <div className="space-y-3 flex-1">
+              <div className="space-y-4 flex-1">
                 {notifications.slice(0, 3).map((notif) => (
-                  <div key={notif.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700">
-                    <p className="text-sm text-slate-700 dark:text-slate-200 font-medium line-clamp-2">{notif.title}</p>
-                    <p className="text-xs text-slate-500 mt-1">{notif.time}</p>
+                  <div key={notif.id} className="bg-[#F8FAFC] rounded-[16px] p-4 border border-slate-100 hover:border-slate-200 transition-colors">
+                    <p className="text-[14px] text-slate-800 font-semibold line-clamp-2 leading-snug">{notif.title}</p>
+                    <p className="text-[12px] font-medium text-slate-400 mt-2">{notif.time}</p>
                   </div>
                 ))}
               </div>
               {notifications.length === 0 && (
-                <div className="text-sm text-slate-500 text-center py-4">No recent updates.</div>
+                <div className="text-sm font-medium text-slate-400 text-center py-6">No recent updates.</div>
               )}
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => navigate("/collegeadmin/departments")} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-400 transition-colors text-slate-600 dark:text-slate-300 group">
-                <Building2 size={24} className="mb-2 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-semibold">New Dept</span>
+          <div className="bg-white rounded-[24px] p-7 shadow-sm border border-[#E5E7EB] hover:shadow-md transition-shadow">
+            <h3 className="font-bold text-slate-900 text-lg mb-6 tracking-tight">Quick Actions</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <button onClick={() => navigate("/collegeadmin/departments")} className="flex flex-col items-center justify-center p-5 rounded-[20px] bg-emerald-50/50 hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-colors text-slate-600 group">
+                <div className="p-3 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                  <Building2 size={24} className="text-emerald-600" />
+                </div>
+                <span className="text-[13px] font-bold text-slate-700">New Dept</span>
               </button>
-              <button onClick={() => navigate("/collegeadmin/professors")} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 group">
-                <UserPlus size={24} className="mb-2 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-semibold">Add Prof</span>
+              <button onClick={() => navigate("/collegeadmin/professors")} className="flex flex-col items-center justify-center p-5 rounded-[20px] bg-purple-50/50 hover:bg-purple-50 border border-transparent hover:border-purple-100 transition-colors text-slate-600 group">
+                <div className="p-3 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                  <UserPlus size={24} className="text-purple-600" />
+                </div>
+                <span className="text-[13px] font-bold text-slate-700">Add Prof</span>
               </button>
-              <button onClick={() => navigate("/collegeadmin/notifications")} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 group">
-                <BellRing size={24} className="mb-2 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-semibold">Notify</span>
+              <button onClick={() => navigate("/collegeadmin/notifications")} className="flex flex-col items-center justify-center p-5 rounded-[20px] bg-orange-50/50 hover:bg-orange-50 border border-transparent hover:border-orange-100 transition-colors text-slate-600 group">
+                <div className="p-3 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                  <BellRing size={24} className="text-orange-500" />
+                </div>
+                <span className="text-[13px] font-bold text-slate-700">Notify</span>
               </button>
-              <button onClick={() => navigate("/collegeadmin/settings")} className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300 group">
-                <Settings size={24} className="mb-2 group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-semibold">Settings</span>
+              <button onClick={() => navigate("/collegeadmin/settings")} className="flex flex-col items-center justify-center p-5 rounded-[20px] bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors text-slate-600 group">
+                <div className="p-3 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform">
+                  <Settings size={24} className="text-slate-500" />
+                </div>
+                <span className="text-[13px] font-bold text-slate-700">Settings</span>
               </button>
             </div>
           </div>

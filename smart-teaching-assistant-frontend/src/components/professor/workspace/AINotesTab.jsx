@@ -25,7 +25,7 @@ export default function AINotesTab() {
     };
 
     return (
-        <div className="flex flex-col gap-6 h-full">
+        <div className="flex flex-col gap-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900">AI Study Notes</h2>

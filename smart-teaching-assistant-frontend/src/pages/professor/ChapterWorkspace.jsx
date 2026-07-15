@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Settings, ExternalLink, Download, FileText, Bookmark, Copy, RefreshCw, Search, ArrowLeft, ArrowRight, BookOpen, Clock, Activity, Target, Loader2 } from 'lucide-react';
+import { ChevronRight, Download, FileText, Bookmark, Copy, RefreshCw, BookOpen, Clock, Target, AlertTriangle, MonitorPlay, Library, Lightbulb, TrendingUp, Zap, HelpCircle } from 'lucide-react';
 import { subjects } from '../../data/mock/subjects';
 import { chapters } from '../../data/mock/chapters';
-import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import { useToast } from '../../context/ToastContext';
 import { simulateAction, simulateDownload } from '../../utils/simulateAction';
 
@@ -42,18 +40,6 @@ const tabs = [
     { id: 'codingproblems', label: 'Coding Problems' }
 ];
 
-// Skeleton Loader Component
-const SkeletonLoader = () => (
-    <div className="animate-pulse space-y-6">
-        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-        <div className="h-32 bg-gray-200 rounded-xl"></div>
-        <div className="grid grid-cols-2 gap-4">
-            <div className="h-48 bg-gray-200 rounded-xl"></div>
-            <div className="h-48 bg-gray-200 rounded-xl"></div>
-        </div>
-    </div>
-);
-
 export default function ChapterWorkspace() {
     const { subjectId, chapterId } = useParams();
     const navigate = useNavigate();
@@ -65,52 +51,19 @@ export default function ChapterWorkspace() {
         }
     }, [subjectId, chapterId, navigate]);
 
-    // Find active states
     const subject = subjects.find(s => s.id === (subjectId || "CS401")) || subjects[0];
-    // Filter chapters belonging to subject
     const subjectChapters = chapters.filter(c => c.subjectId === subject.id);
     const selectedChapterIndex = subjectChapters.findIndex(c => c.id === chapterId);
-
-    // Fallbacks
     const activeChapter = selectedChapterIndex !== -1 ? subjectChapters[selectedChapterIndex] : subjectChapters[0];
 
-    // Added Interactivity States
     const [activeTab, setActiveTab] = useState('overview');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isBookmarked, setIsBookmarked] = useState(false);
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
-    const [isSearching, setIsSearching] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(false);
 
-    // Mock Extra metadata wrapper
-    const analysisMeta = {
-        confidenceScore: 98,
-        estimatedTeachingTime: "3 Hours",
-        readingTime: "45 Mins",
-        difficultyLevel: activeChapter?.difficulty || "Medium",
-        lastGenerated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        completionScore: 0
-    };
-
-    // When chapter or tab changes, trigger 500ms loader
-    useEffect(() => {
-        setIsLoading(true);
-        const timer = setTimeout(() => {
-            setIsLoading(false);
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [chapterId, activeTab]);
-
-    const handleTabChange = (tabId) => {
-        if (activeTab === tabId) return;
-        setActiveTab(tabId);
-    };
-
-    const navigateChapter = (dir) => {
-        let newIndex = selectedChapterIndex + dir;
-        if (newIndex >= 0 && newIndex < subjectChapters.length) {
-            navigate(`/professor/workspace/${subject.id}/${subjectChapters[newIndex].id}`);
-        }
+    const handleBookmark = () => {
+        setIsBookmarked(!isBookmarked);
+        addToast(isBookmarked ? "Removed from bookmarks." : "Chapter bookmarked successfully.", "success");
     };
 
     const handleCopy = () => {
@@ -134,14 +87,7 @@ export default function ChapterWorkspace() {
         addToast("Download completed successfully.", "success");
     };
 
-    const handleBookmark = () => {
-        setIsBookmarked(!isBookmarked);
-        addToast(isBookmarked ? "Removed from bookmarks." : "Chapter bookmarked successfully.", "success");
-    };
-
     const renderContent = () => {
-        if (isLoading || isRegenerating) return <SkeletonLoader />;
-
         switch (activeTab) {
             case 'overview': return <OverviewTab />;
             case 'keypoints': return <KeyPointsTab />;
@@ -161,165 +107,205 @@ export default function ChapterWorkspace() {
         }
     };
 
-    return (
-        <div className="pb-12 w-full h-[calc(100vh-80px)] overflow-hidden flex gap-4">
-
-            {/* Left Sidebar - Chapters */}
-            <div className="w-80 bg-white border border-gray-200 rounded-2xl flex flex-col overflow-hidden shadow-sm flex-shrink-0">
-                <div className="p-5 border-b border-gray-200">
-                    <h3 className="font-bold text-gray-900 tracking-tight flex items-center gap-2"><BookOpen size={18} className="text-orange-500" /> Syllabus Clusters</h3>
-                    <p className="text-xs text-gray-500 mt-1">Extracted AI Topics</p>
+    if (!activeChapter) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-12 text-center w-full">
+                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-6 border border-gray-200 shadow-sm">
+                    <FileText size={32} className="text-gray-400" />
                 </div>
-                <div className="overflow-y-auto p-4 space-y-6 flex-1 custom-scrollbar">
-                    {subjectChapters.length === 0 ? (
-                        <div className="text-sm text-gray-500 text-center py-6 border-2 border-dashed border-gray-100 rounded-lg">No chapters extracted yet.</div>
-                    ) : (
-                        <div>
-                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Unit 1</h4>
-                            <div className="space-y-1">
-                                {subjectChapters.map((chap, idx) => {
-                                    const isActive = activeChapter?.id === chap.id;
-                                    return (
-                                        <button
-                                            key={chap.id}
-                                            onClick={() => navigate(`/professor/workspace/${subject.id}/${chap.id}`)}
-                                            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${isActive
-                                                ? 'bg-orange-50 text-orange-900 shadow-sm border border-orange-100/50 relative'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-transparent'
-                                                }`}
-                                        >
-                                            <div className="truncate">{idx + 1}. {chap.title}</div>
-                                            {isActive && (
-                                                <motion.div layoutId="activeSidebar" className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500 rounded-r-full" />
-                                            )}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                <h2 className="text-[32px] font-bold text-gray-900 mb-2">No analysis generated</h2>
+                <p className="text-[15px] text-gray-500 max-w-sm mb-8">Upload course material to automatically generate chapters, slides, quizzes, and teaching plans.</p>
+                <button className="h-[44px] px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-[12px] font-bold text-[15px] shadow-sm hover:shadow-md transition-shadow" onClick={() => navigate('/professor/upload')}>
+                    Upload Material
+                </button>
             </div>
+        );
+    }
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col h-full bg-white text-left border border-gray-200 rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.02)] overflow-hidden relative">
+    return (
+        <div className="min-h-screen bg-[#F8FAFC] pb-24">
+            <div className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
 
-                {!activeChapter ? (
-                    <div className="flex-1 flex flex-col justify-center items-center p-12 text-center h-full">
-                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 border border-gray-100 shadow-sm">
-                            <FileText size={32} className="text-gray-400" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">No analysis generated yet</h2>
-                        <p className="text-gray-500 max-w-sm mb-8">Upload course material to automatically generate chapters, slides, quizzes, and a comprehensive teaching plan.</p>
-                        <Button variant="primary" onClick={() => navigate('/professor/upload')}>Generate Analysis</Button>
+                {/* 1. HEADER AREA */}
+                <div className="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-6">
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <h1 className="text-[32px] font-bold text-slate-900 leading-tight">{activeChapter.title}</h1>
+                        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 text-[13px] font-bold rounded-full uppercase tracking-wider shrink-0 shadow-sm align-middle">Unit {selectedChapterIndex + 1}</span>
                     </div>
-                ) : (
-                    <>
-                        {isSearching && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute top-0 left-0 right-0 p-4 bg-white z-50 shadow-sm flex border-b border-gray-100">
-                                <input autoFocus onBlur={() => setIsSearching(false)} type="text" placeholder="Search inside chapter..." className="flex-1 px-4 py-2 bg-gray-50 rounded-lg outline-none focus:ring-1 focus:ring-orange-500/50" />
-                            </motion.div>
-                        )}
+                    <div className="flex gap-4 shrink-0 overflow-x-auto pb-1 xl:pb-0 hide-scrollbar">
+                        <button onClick={handleRegenerate} disabled={isRegenerating} className="h-[44px] px-6 flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 rounded-[12px] font-bold text-[15px] transition-all shadow-sm whitespace-nowrap shrink-0">
+                            <RefreshCw size={18} className={isRegenerating ? "animate-spin" : ""} /> Regenerate
+                        </button>
+                        <button onClick={handleCopy} className="h-[44px] px-6 flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 rounded-[12px] font-bold text-[15px] transition-all shadow-sm whitespace-nowrap shrink-0">
+                            <Copy size={18} /> Copy
+                        </button>
+                        <button onClick={handleBookmark} className="h-[44px] w-[44px] flex items-center justify-center bg-white border border-slate-200 hover:border-slate-300 text-slate-700 rounded-[12px] shadow-sm transition-all shrink-0">
+                            <Bookmark size={18} className={isBookmarked ? "text-orange-500 fill-orange-500" : ""} />
+                        </button>
+                        <button onClick={handleExport} disabled={isExporting} className="h-[44px] px-6 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-[12px] font-bold text-[15px] transition-all shadow-[0_4px_14px_rgba(16,185,129,0.3)] whitespace-nowrap shrink-0">
+                            <Download size={18} /> Export Process
+                        </button>
+                    </div>
+                </div>
 
-                        {/* Header & Meta Tools */}
-                        <div className="border-b border-gray-200 p-4">
-                            {/* Top Meta Stats Toolbar */}
-                            <div className="flex justify-between items-center bg-gray-50/70 p-3 rounded-xl border border-gray-100 mb-4">
-                                <div className="flex items-center gap-6">
-                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <Target size={16} className="text-emerald-500" />
-                                        <span className="font-semibold">{analysisMeta.confidenceScore}%</span>
-                                        <span className="text-gray-400 text-xs hidden xl:inline">AI Confidence</span>
-                                    </div>
-                                    <div className="w-px h-6 bg-gray-200 hidden md:block"></div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <Clock size={16} className="text-blue-500" />
-                                        <span className="font-semibold">{analysisMeta.estimatedTeachingTime}</span>
-                                    </div>
-                                    <div className="w-px h-6 bg-gray-200 hidden md:block"></div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <BookOpen size={16} className="text-purple-500" />
-                                        <span className="font-semibold">{analysisMeta.readingTime}</span>
-                                    </div>
-                                    <div className="w-px h-6 bg-gray-200 hidden md:block"></div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                                        <Activity size={16} className="text-rose-500" />
-                                        <span className="font-semibold flex items-center"><span className="hidden lg:inline mr-1">Level:</span> {analysisMeta.difficultyLevel}</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Button variant="secondary" size="icon" title="Search inside chapter" onClick={() => setIsSearching(true)}><Search size={16} /></Button>
-                                    <Button variant="secondary" size="icon" title="Bookmark Chapter" onClick={handleBookmark}>
-                                        <Bookmark size={16} className={isBookmarked ? 'text-orange-500 fill-orange-500' : ''} />
-                                    </Button>
-                                    <div className="w-px h-auto bg-gray-200 mx-1"></div>
-                                    <Button variant="secondary" size="sm" onClick={() => navigateChapter(-1)} disabled={selectedChapterIndex === 0}><ArrowLeft size={16} /></Button>
-                                    <Button variant="secondary" size="sm" onClick={() => navigateChapter(1)} disabled={selectedChapterIndex === subjectChapters.length - 1}><ArrowRight size={16} /></Button>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                                <div className="flex items-center gap-3">
-                                    <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{activeChapter?.title}</h1>
-                                    <Badge variant="success">Unit {selectedChapterIndex + 1}</Badge>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Button variant="outline" onClick={handleRegenerate} disabled={isRegenerating}>
-                                        {isRegenerating ? <Loader2 size={14} className="mr-2 animate-spin" /> : <RefreshCw size={14} className="mr-2" />}
-                                        Regenerate
-                                    </Button>
-                                    <Button variant="outline" onClick={handleCopy}><Copy size={14} className="mr-2" /> Copy Meta</Button>
-                                    <Button variant="primary" onClick={handleExport} disabled={isExporting}>
-                                        {isExporting ? <Loader2 size={14} className="mr-2 animate-spin" /> : <Download size={14} className="mr-2" />}
-                                        Export All
-                                    </Button>
-                                </div>
-                            </div>
+                {/* 2. AI METRICS PREMIUM STRIP */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Confidence */}
+                    <div className="bg-white rounded-[20px] p-6 shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100 flex flex-col transition-all hover:shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:-translate-y-0.5">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-[12px]"><Target size={20} /></div>
+                            <span className="text-[15px] font-semibold text-slate-500">AI Confidence</span>
                         </div>
+                        <h2 className="text-[32px] font-bold text-slate-900 tracking-tight">98%</h2>
+                    </div>
 
-                        {/* Scrollable Tabs Header */}
-                        <div className="border-b border-gray-200 bg-gray-50/50 px-2 lg:px-4 overflow-x-auto hide-scrollbar shrink-0">
-                            <div className="flex space-x-1 py-3 min-w-max">
-                                {tabs.map((tab) => (
+                    {/* Time */}
+                    <div className="bg-white rounded-[20px] p-6 shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100 flex flex-col transition-all hover:shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:-translate-y-0.5">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-[12px]"><Clock size={20} /></div>
+                            <span className="text-[15px] font-semibold text-slate-500">Estimated Time</span>
+                        </div>
+                        <h2 className="text-[32px] font-bold text-slate-900 tracking-tight">3 Hours</h2>
+                    </div>
+
+                    {/* Difficulty */}
+                    <div className="bg-white rounded-[20px] p-6 shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100 flex flex-col transition-all hover:shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:-translate-y-0.5">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-amber-50 text-amber-600 rounded-[12px]"><AlertTriangle size={20} /></div>
+                            <span className="text-[15px] font-semibold text-slate-500">Difficulty</span>
+                        </div>
+                        <h2 className="text-[32px] font-bold text-slate-900 tracking-tight">{activeChapter.difficulty || "Medium"}</h2>
+                    </div>
+
+                    {/* Bloom Level */}
+                    <div className="bg-white rounded-[20px] p-6 shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100 flex flex-col transition-all hover:shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:-translate-y-0.5">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-purple-50 text-purple-600 rounded-[12px]"><TrendingUp size={20} /></div>
+                            <span className="text-[15px] font-semibold text-slate-500">Bloom Level</span>
+                        </div>
+                        <h2 className="text-[32px] font-bold text-slate-900 tracking-tight">Apply</h2>
+                    </div>
+                </div>
+
+                {/* 3. STICKY TABS */}
+                <div className="sticky top-0 z-40 bg-[#F8FAFC]/90 backdrop-blur-md pb-4 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-b border-slate-200/50">
+                    <div className="flex overflow-x-auto no-scrollbar min-w-max space-x-2">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`relative px-5 py-3 text-[15px] font-bold transition-all rounded-[12px] whitespace-nowrap outline-none ${activeTab === tab.id
+                                    ? 'bg-slate-900 text-white shadow-md'
+                                    : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 shadow-sm'
+                                    }`}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* 4. MAIN CONTENT GRID */}
+                <div className="grid grid-cols-1 xl:grid-cols-[340px_1fr] items-start gap-8 relative">
+
+                    {/* Left Navigation Sidebar */}
+                    <div className="sticky top-[100px] bg-white rounded-[20px] border border-slate-200 p-4 shadow-[0_2px_12px_rgba(15,23,42,0.02)] hidden xl:block self-start">
+                        <div className="mb-6 px-2 pt-2">
+                            <h3 className="font-bold text-[18px] text-slate-900 tracking-tight flex items-center gap-2">
+                                <div className="p-1.5 bg-slate-100 rounded-[8px]"><BookOpen size={16} className="text-slate-700" /></div> Topics
+                            </h3>
+                            <p className="text-[13px] font-semibold text-slate-400 mt-2">Navigate Syllabus</p>
+                        </div>
+                        <div className="space-y-1">
+                            {subjectChapters.map((chap, idx) => {
+                                const isActive = activeChapter?.id === chap.id;
+                                return (
                                     <button
-                                        key={tab.id}
-                                        onClick={() => handleTabChange(tab.id)}
-                                        className={`relative px-4 py-2 text-sm font-medium rounded-xl transition-all ${activeTab === tab.id
-                                            ? 'text-orange-600 bg-orange-50'
-                                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                        key={chap.id}
+                                        onClick={() => navigate(`/professor/workspace/${subject.id}/${chap.id}`)}
+                                        className={`w-full text-left px-4 py-3.5 rounded-[12px] text-[15px] transition-all flex items-center gap-3 outline-none ${isActive
+                                            ? 'bg-emerald-50 text-emerald-900 font-bold relative'
+                                            : 'text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900'
                                             }`}
                                     >
-                                        {tab.label}
-                                        {activeTab === tab.id && (
-                                            <motion.div
-                                                layoutId="activeTabIndicatorWorkspace"
-                                                className="absolute bottom-[-13px] left-0 right-0 h-0.5 bg-orange-500 rounded-t-full"
-                                            />
+                                        {isActive && (
+                                            <div className="absolute left-0 top-[20%] bottom-[20%] w-[4px] bg-emerald-500 rounded-r-full shadow-sm" />
                                         )}
+                                        <div className={`w-7 h-7 rounded-[8px] flex items-center justify-center shrink-0 text-[13px] font-bold transition-colors ${isActive ? 'bg-white text-emerald-600 shadow-sm' : 'bg-slate-100 text-slate-500 border border-slate-200'
+                                            }`}>
+                                            {idx + 1}
+                                        </div>
+                                        <div className="truncate flex-1">{chap.title}</div>
                                     </button>
-                                ))}
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Main Flowing Content */}
+                    <div className="min-w-0 flex flex-col gap-8">
+                        <div>
+                            {renderContent()}
+                        </div>
+
+                        {/* 5. BOTTOM KNOWLEDGE METADATA CARDS */}
+                        <div className="pt-8 border-t border-slate-200">
+                            <h2 className="text-[22px] font-bold text-slate-900 mb-6">Chapter Metadata</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Details Card */}
+                                <div className="bg-white p-6 rounded-[20px] shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100">
+                                    <div className="flex items-center gap-3 mb-4 text-emerald-600">
+                                        <HelpCircle size={20} />
+                                        <h3 className="text-[18px] font-bold text-slate-900">Difficulty Context</h3>
+                                    </div>
+                                    <p className="text-[15px] text-slate-600 leading-relaxed">This chapter requires foundational knowledge in basic programming. Concepts like pointers and memory allocation will be heavily utilized when explaining OS-level system properties.</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-[20px] shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100">
+                                    <div className="flex items-center gap-3 mb-4 text-blue-500">
+                                        <Clock size={20} />
+                                        <h3 className="text-[18px] font-bold text-slate-900">Time Allocation</h3>
+                                    </div>
+                                    <p className="text-[15px] text-slate-600 leading-relaxed">Lectures: 3 Hours<br />Practical: 2 Hours<br />Expected Student Self-Study: 4 Hours for mastery.</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-[20px] shadow-[0_2px_12px_rgba(15,23,42,0.03)] border border-slate-100">
+                                    <div className="flex items-center gap-3 mb-4 text-purple-500">
+                                        <Zap size={20} />
+                                        <h3 className="text-[18px] font-bold text-slate-900">Prerequisites</h3>
+                                    </div>
+                                    <ul className="list-disc ml-5 text-[15px] text-slate-600 space-y-1">
+                                        <li>C Programming Background</li>
+                                        <li>Basic Computer Architecture</li>
+                                        <li>Understanding of Arrays & Linked Lists</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-slate-900 p-6 rounded-[20px] shadow-[0_12px_30px_rgba(15,23,42,0.15)] text-white">
+                                    <div className="flex items-center gap-3 mb-5 text-orange-400">
+                                        <Library size={20} />
+                                        <h3 className="text-[18px] font-bold text-white">Resources</h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4 bg-white/10 p-3 rounded-[12px] hover:bg-white/20 transition-colors cursor-pointer">
+                                            <MonitorPlay size={18} className="text-emerald-400 shrink-0" />
+                                            <div>
+                                                <div className="text-[15px] font-bold">MIT OCW: OS Architecture</div>
+                                                <div className="text-[13px] text-slate-400">Video • 45m</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4 bg-white/10 p-3 rounded-[12px] hover:bg-white/20 transition-colors cursor-pointer">
+                                            <BookOpen size={18} className="text-orange-400 shrink-0" />
+                                            <div>
+                                                <div className="text-[15px] font-bold">Operating Systems Concept</div>
+                                                <div className="text-[13px] text-slate-400">Silberschatz Docs</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Dynamic Content */}
-                        <div className="p-6 lg:p-8 flex-1 bg-[#FAFAFA] overflow-y-auto custom-scrollbar">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={activeTab + (isLoading ? 'loading' : 'content')}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="h-full"
-                                >
-                                    {renderContent()}
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
-                    </>
-                )}
+                    </div>
+                </div>
+
             </div>
         </div>
     );

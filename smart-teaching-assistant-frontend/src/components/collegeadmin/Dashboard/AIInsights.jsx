@@ -6,19 +6,19 @@ const insights = [
         title: "Student Performance Improving",
         description: "AI analysis shows 15% improvement in average grades across departments this semester.",
         icon: TrendingUp,
-        color: "text-green-600 bg-green-100",
+        color: "text-emerald-600 bg-emerald-50",
     },
     {
         title: "Resource Gap Detected",
         description: "Computer Science department needs more study materials for advanced topics.",
         icon: Lightbulb,
-        color: "text-yellow-600 bg-yellow-100",
+        color: "text-orange-600 bg-orange-50",
     },
     {
         title: "Optimal Assessment Timing",
         description: "Best results observed when assessments are scheduled mid-week.",
         icon: Target,
-        color: "text-blue-600 bg-blue-100",
+        color: "text-purple-600 bg-purple-50",
     },
 ];
 
@@ -31,8 +31,8 @@ export default function AIInsights() {
             className="bg-white rounded-3xl shadow-lg p-6 border"
         >
             <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <BrainCircuit className="text-indigo-600" size={22} />
+                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+                    <BrainCircuit className="text-purple-600" size={22} />
                 </div>
                 <h2 className="text-xl font-bold text-slate-800">AI Insights</h2>
             </div>

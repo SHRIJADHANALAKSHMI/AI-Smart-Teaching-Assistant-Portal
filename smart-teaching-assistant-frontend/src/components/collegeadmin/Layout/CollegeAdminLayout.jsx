@@ -12,10 +12,12 @@ export default function CollegeAdminLayout() {
 
   return (
     <CollegeAdminProvider>
-      <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-blue-500/30 selection:text-blue-900 dark:selection:text-blue-100">
-        {/* Background ambient accents for clean enterprise vibe */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 bg-slate-50 dark:bg-slate-950">
-          <div className="absolute top-0 w-full h-[350px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10 pointer-events-none" />
+      <div className="flex min-h-screen bg-[#F8FAFC] font-sans text-slate-900 selection:bg-emerald-500/30 selection:text-emerald-900">
+
+        {/* Soft background accents for enterprise feel */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-100/40 rounded-full blur-[120px]" />
+          <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-orange-100/20 rounded-full blur-[120px]" />
         </div>
 
         <div className="hidden lg:block relative z-20">
@@ -24,10 +26,10 @@ export default function CollegeAdminLayout() {
 
         <MobileSidebar open={mobileOpen} setOpen={setMobileOpen} />
 
-        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative z-10 h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
+        <div className="flex flex-col flex-1 min-w-0 transition-all duration-300 relative z-10 h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
           <Navbar collapsed={collapsed} setCollapsed={setCollapsed} setMobileOpen={setMobileOpen} />
 
-          <main className="flex-1 p-6 md:p-8 max-w-[1600px] w-full mx-auto relative z-10">
+          <main className="flex-1 p-6 md:p-10 max-w-[1600px] w-full mx-auto relative z-10">
             <Outlet />
           </main>
 

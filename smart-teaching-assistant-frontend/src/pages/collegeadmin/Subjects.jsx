@@ -49,7 +49,6 @@ export default function Subjects() {
     const totalPages = Math.ceil(processedSubjects.length / itemsPerPage) || 1;
     const paginatedSubjects = processedSubjects.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-
     // Handlers
     const handleSort = (key) => {
         let direction = 'asc';
@@ -98,60 +97,94 @@ export default function Subjects() {
         }, 500);
     };
 
+    const InputField = ({ id, label, value, onChange, type = "text", required = false }) => (
+        <div className="relative group">
+            <input
+                id={id}
+                required={required}
+                value={value}
+                onChange={onChange}
+                type={type}
+                className="peer w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 placeholder-transparent font-medium"
+                placeholder={label}
+            />
+            <label
+                htmlFor={id}
+                className={clsx(
+                    "absolute left-4 top-2 text-[11px] font-bold uppercase tracking-wider transition-all pointer-events-none",
+                    "peer-placeholder-shown:text-[14px] peer-placeholder-shown:top-3.5 peer-placeholder-shown:normal-case peer-placeholder-shown:text-slate-400 peer-placeholder-shown:font-medium",
+                    "peer-focus:text-[11px] peer-focus:top-2 peer-focus:uppercase peer-focus:font-bold peer-focus:text-emerald-600",
+                    value ? "text-emerald-600" : "text-slate-400"
+                )}
+            >
+                {label} {required && <span className="text-rose-500">*</span>}
+            </label>
+        </div>
+    );
+
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-12" onClick={() => setOpenActionId(null)}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-12 w-full" onClick={() => setOpenActionId(null)}>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-8 rounded-[24px] shadow-sm border border-[#E5E7EB] hover:shadow-md transition-shadow">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <BookOpen className="text-blue-500" /> Subjects
+                    <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-3 tracking-tight">
+                        <div className="p-2.5 bg-purple-50 rounded-[12px]">
+                            <BookOpen className="text-purple-600" size={28} />
+                        </div>
+                        Subjects
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">Manage curriculum and track {subjects.length} active subjects.</p>
+                    <p className="text-slate-500 font-medium mt-2">Manage curriculum and track {subjects.length} active subjects.</p>
                 </div>
-                <button onClick={handleAddClick} className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-md shadow-blue-500/20 font-medium text-sm shrink-0">
-                    <Plus size={18} /> Add Subject
+                <button onClick={handleAddClick} className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3.5 rounded-[16px] font-bold hover:shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all outline-none shrink-0">
+                    <Plus size={20} strokeWidth={2.5} /> Add Subject
                 </button>
             </div>
 
             {/* Toolbar Filters */}
-            <div className="flex flex-col xl:flex-row gap-4 mb-6 justify-between">
+            <div className="flex flex-col xl:flex-row gap-4 mb-2 justify-between">
                 <div className="flex flex-col sm:flex-row gap-4 flex-1">
-                    <div className="relative max-w-md w-full">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                        <input type="text" placeholder="Search subjects by name or code..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 shadow-sm text-sm" />
+                    <div className="relative max-w-md w-full group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
+                        <input type="text" placeholder="Search subjects by name or code..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} className="w-full bg-white border border-[#E5E7EB] rounded-[16px] pl-11 pr-4 py-3 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 shadow-sm transition-all text-[15px] font-medium placeholder-slate-400 text-slate-800" />
                     </div>
 
                     {/* Filters */}
-                    <div className="flex gap-2">
-                        <select value={deptFilter} onChange={e => { setDeptFilter(e.target.value); setCurrentPage(1); }} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl shadow-sm text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500/50">
+                    <div className="flex gap-2 relative">
+                        <select value={deptFilter} onChange={e => { setDeptFilter(e.target.value); setCurrentPage(1); }} className="bg-white border border-[#E5E7EB] text-slate-700 px-4 py-3 rounded-[16px] shadow-sm text-[14px] font-bold outline-none focus:ring-4 focus:ring-purple-500/10 focus:border-purple-300 appearance-none pr-10 cursor-pointer">
                             <option value="All">All Departments</option>
                             {departments.map(d => (
                                 <option key={d.code} value={d.code}>{d.code}</option>
                             ))}
                         </select>
-                        <select value={semesterFilter} onChange={e => { setSemesterFilter(e.target.value); setCurrentPage(1); }} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl shadow-sm text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500/50">
+                        <ChevronDown size={14} className="absolute left-[138px] top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+
+                        <select value={semesterFilter} onChange={e => { setSemesterFilter(e.target.value); setCurrentPage(1); }} className="bg-white border border-[#E5E7EB] text-slate-700 px-4 py-3 rounded-[16px] shadow-sm text-[14px] font-bold outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-300 appearance-none pr-10 cursor-pointer ml-3">
                             <option value="All">All Semesters</option>
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s.toString()}>Sem {s}</option>)}
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s.toString()}>Semester {s}</option>)}
                         </select>
+                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                     </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* Simplified Sorting for Grid View explicitly mapped if needed, else layout standard table */}
+                    {/* Simplified Sorting for Grid View */}
                     {viewMode === 'grid' && (
-                        <select value={sortConfig.key} onChange={(e) => setSortConfig({ key: e.target.value, direction: sortConfig.direction })} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-sm outline-none">
-                            <option value="name">Sort by Name</option>
-                            <option value="code">Sort by Code</option>
-                            <option value="semester">Sort by Sem</option>
-                        </select>
+                        <div className="relative">
+                            <select value={sortConfig.key} onChange={(e) => setSortConfig({ key: e.target.value, direction: sortConfig.direction })} className="bg-white border border-slate-200 text-slate-700 pr-9 pl-4 py-3 rounded-[16px] shadow-sm text-[14px] font-bold outline-none appearance-none cursor-pointer hover:bg-slate-50 transition-colors">
+                                <option value="name">Sort by Name</option>
+                                <option value="code">Sort by Code</option>
+                                <option value="semester">Sort by Semester</option>
+                            </select>
+                            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                        </div>
                     )}
 
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit self-end xl:self-auto">
-                        <button onClick={() => setViewMode("grid")} className={clsx("p-2 rounded-lg transition-all", viewMode === "grid" ? "bg-white dark:bg-slate-700 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}>
-                            <LayoutGrid size={18} />
+                    <div className="flex bg-[#F8FAFC] border border-slate-200 p-1 rounded-[16px] w-fit self-end xl:self-auto shadow-sm">
+                        <button onClick={() => setViewMode("grid")} className={clsx("p-2 rounded-[12px] transition-all", viewMode === "grid" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400 hover:text-slate-700")}>
+                            <LayoutGrid size={20} />
                         </button>
-                        <button onClick={() => setViewMode("table")} className={clsx("p-2 rounded-lg transition-all", viewMode === "table" ? "bg-white dark:bg-slate-700 shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}>
-                            <List size={18} />
+                        <button onClick={() => setViewMode("table")} className={clsx("p-2 rounded-[12px] transition-all", viewMode === "table" ? "bg-white shadow-sm text-emerald-600" : "text-slate-400 hover:text-slate-700")}>
+                            <List size={20} />
                         </button>
                     </div>
                 </div>
@@ -160,91 +193,100 @@ export default function Subjects() {
             <AnimatePresence mode="wait">
                 {viewMode === "grid" ? (
                     <motion.div key="grid" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {paginatedSubjects.map((sub) => (
-                            <div key={sub.id} className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all group relative">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-50 to-transparent dark:from-blue-900/10 rounded-bl-full pointer-events-none" />
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="h-10 px-3 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-bold text-xs border border-blue-100 dark:border-blue-500/20">
+                        {paginatedSubjects.map((sub, idx) => (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.05 }}
+                                key={sub.id}
+                                className="bg-white rounded-[24px] p-6 border border-[#E5E7EB] shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1 transition-all group relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-50/80 to-transparent rounded-bl-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="h-10 px-3 bg-[#F8FAFC] text-slate-600 rounded-[12px] flex items-center justify-center font-bold text-[13px] border border-slate-200 shadow-sm tracking-wide">
                                         {sub.code}
                                     </div>
                                     <div className="relative">
-                                        <button onClick={(e) => { e.stopPropagation(); setOpenActionId(openActionId === sub.id ? null : sub.id); }} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800">
-                                            <MoreHorizontal size={20} />
+                                        <button onClick={(e) => { e.stopPropagation(); setOpenActionId(openActionId === sub.id ? null : sub.id); }} className="text-slate-400 hover:text-slate-800 p-1.5 rounded-[10px] hover:bg-slate-100 transition-colors">
+                                            <MoreHorizontal size={22} />
                                         </button>
                                         <AnimatePresence>
                                             {openActionId === sub.id && (
-                                                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="absolute right-0 top-8 w-32 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg shadow-xl py-1 z-10">
-                                                    <button onClick={() => handleEditClick(sub)} className="w-full text-left px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-sm text-slate-700 flex items-center gap-2"><Edit size={14} /> Edit</button>
-                                                    <button onClick={() => handleDeleteClick(sub.id)} className="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600 flex items-center gap-2"><Trash2 size={14} /> Delete</button>
+                                                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="absolute right-0 top-10 w-36 bg-white border border-slate-200 rounded-[16px] shadow-lg shadow-slate-200/50 py-2 z-20">
+                                                    <button onClick={() => handleEditClick(sub)} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-[14px] font-semibold text-slate-700 flex items-center gap-3 transition-colors"><Edit size={16} className="text-amber-500" /> Edit</button>
+                                                    <button onClick={() => handleDeleteClick(sub.id)} className="w-full text-left px-4 py-2 hover:bg-rose-50 text-[14px] font-semibold text-rose-600 flex items-center gap-3 transition-colors"><Trash2 size={16} /> Delete</button>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-slate-800 dark:text-white leading-tight mb-3 line-clamp-1">{sub.name}</h3>
-                                <div className="space-y-2 mt-4 text-sm text-slate-600 dark:text-slate-400">
-                                    <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg py-1.5">
-                                        <span className="text-xs font-medium">Department</span>
-                                        <span className="font-bold text-slate-800 dark:text-slate-200">{sub.department}</span>
+                                <h3 className="font-extrabold text-[17px] text-slate-900 leading-tight mb-4 pr-4">{sub.name}</h3>
+                                <div className="space-y-2 mt-2">
+                                    <div className="flex justify-between items-center p-2.5 rounded-[12px] bg-slate-50 border border-transparent group-hover:border-slate-100 transition-colors">
+                                        <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Dept</span>
+                                        <span className="font-bold text-slate-700">{sub.department}</span>
                                     </div>
-                                    <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg py-1.5">
-                                        <span className="text-xs font-medium">Professor</span>
-                                        <span className="font-bold text-blue-600 dark:text-blue-400 truncate max-w-[120px]">{sub.professor || "Unassigned"}</span>
+                                    <div className="flex justify-between items-center p-2.5 rounded-[12px] bg-slate-50 border border-transparent group-hover:border-slate-100 transition-colors">
+                                        <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Prof</span>
+                                        <span className="font-bold text-purple-600 truncate max-w-[120px]">{sub.professor || "Unassigned"}</span>
                                     </div>
-                                    <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg py-1.5">
-                                        <span className="text-xs font-medium">Semester</span>
-                                        <span className="font-bold text-slate-800 dark:text-slate-200">{sub.semester}</span>
+                                    <div className="flex justify-between items-center p-2.5 rounded-[12px] bg-slate-50 border border-transparent group-hover:border-slate-100 transition-colors">
+                                        <span className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Sem</span>
+                                        <span className="font-bold text-slate-700">{sub.semester}</span>
                                     </div>
                                 </div>
-                                <div className="mt-5 flex justify-between items-center">
-                                    <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800/80 text-xs font-bold text-slate-600 dark:text-slate-400 rounded-md">{sub.credits} Credits</span>
-                                    <span className={clsx("px-2 py-1 text-[10px] uppercase font-bold rounded-md tracking-wider border", sub.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20" : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:border-slate-700")}>{sub.status}</span>
+                                <div className="mt-6 flex justify-between items-center pt-4 border-t border-slate-100">
+                                    <span className="px-3 py-1.5 bg-orange-50 text-[12px] font-bold text-orange-600 rounded-[10px]">{sub.credits} Credits</span>
+                                    <span className={clsx("px-3 py-1.5 text-[11px] uppercase font-bold rounded-[10px] tracking-widest border", sub.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100")}>{sub.status}</span>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </motion.div>
                 ) : (
-                    <motion.div key="table" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                    <motion.div key="table" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white rounded-[24px] shadow-sm border border-[#E5E7EB] overflow-hidden">
                         <div className="overflow-x-auto min-h-[400px]">
                             <table className="w-full text-left border-collapse min-w-[800px]">
-                                <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                                <thead className="bg-[#F8FAFC] border-b border-slate-100">
                                     <tr>
-                                        <th onClick={() => handleSort('name')} className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                            <div className="flex items-center gap-1">Subject {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}</div>
+                                        <th onClick={() => handleSort('name')} className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider cursor-pointer hover:bg-slate-100 transition whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5">Subject {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} className="text-emerald-500" /> : <ChevronDown size={14} className="text-emerald-500" />)}</div>
                                         </th>
-                                        <th onClick={() => handleSort('department')} className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                            <div className="flex items-center gap-1">Dept {sortConfig.key === 'department' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}</div>
+                                        <th onClick={() => handleSort('department')} className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider cursor-pointer hover:bg-slate-100 transition whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5">Dept {sortConfig.key === 'department' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} className="text-emerald-500" /> : <ChevronDown size={14} className="text-emerald-500" />)}</div>
                                         </th>
-                                        <th onClick={() => handleSort('semester')} className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                            <div className="flex items-center gap-1">Sem (Credits) {sortConfig.key === 'semester' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}</div>
+                                        <th onClick={() => handleSort('semester')} className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider cursor-pointer hover:bg-slate-100 transition whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5">Sem (Crd) {sortConfig.key === 'semester' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} className="text-emerald-500" /> : <ChevronDown size={14} className="text-emerald-500" />)}</div>
                                         </th>
-                                        <th onClick={() => handleSort('professor')} className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                            <div className="flex items-center gap-1">Professor {sortConfig.key === 'professor' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}</div>
+                                        <th onClick={() => handleSort('professor')} className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider cursor-pointer hover:bg-slate-100 transition whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5">Professor {sortConfig.key === 'professor' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} className="text-emerald-500" /> : <ChevronDown size={14} className="text-emerald-500" />)}</div>
                                         </th>
-                                        <th onClick={() => handleSort('status')} className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                            <div className="flex items-center gap-1">Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}</div>
+                                        <th onClick={() => handleSort('status')} className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider cursor-pointer hover:bg-slate-100 transition whitespace-nowrap">
+                                            <div className="flex items-center gap-1.5">Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? <ChevronUp size={14} className="text-emerald-500" /> : <ChevronDown size={14} className="text-emerald-500" />)}</div>
                                         </th>
-                                        <th className="px-6 py-4 font-semibold text-slate-600 dark:text-slate-300 text-sm text-right">Actions</th>
+                                        <th className="px-8 py-5 font-bold text-slate-500 text-[12px] uppercase tracking-wider text-right whitespace-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <AnimatePresence mode="popLayout">
-                                        {paginatedSubjects.map(sub => (
-                                            <motion.tr layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }} key={sub.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 group">
-                                                <td className="px-6 py-4">
-                                                    <p className="font-bold text-slate-800 dark:text-white max-w-[200px] truncate">{sub.name}</p>
-                                                    <p className="text-xs text-blue-600 font-semibold">{sub.code}</p>
+                                        {paginatedSubjects.map((sub, idx) => (
+                                            <motion.tr layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2, delay: idx * 0.05 }} key={sub.id} className={clsx(
+                                                "border-b border-slate-50 hover:bg-[#F8FAFC] transition-colors group",
+                                                idx % 2 === 0 ? "bg-white" : "bg-slate-50/30"
+                                            )}>
+                                                <td className="px-8 py-5">
+                                                    <p className="font-bold text-[15px] text-slate-900 truncate max-w-[250px]">{sub.name}</p>
+                                                    <p className="text-[12px] font-semibold text-slate-400 tracking-wider mt-0.5">{sub.code}</p>
                                                 </td>
-                                                <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm font-medium">{sub.department}</td>
-                                                <td className="px-6 py-4 text-sm text-slate-500">Sem {sub.semester} &bull; <span className="font-bold text-slate-700 dark:text-slate-200">{sub.credits}</span> Crd</td>
-                                                <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300 font-medium">{sub.professor || "--"}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={clsx("px-2.5 py-1 text-[11px] font-bold rounded-full border", sub.status === "Active" ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:border-emerald-500/20" : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:border-slate-700")}>{sub.status}</span>
+                                                <td className="px-8 py-5 text-[14px] font-bold text-slate-700">{sub.department}</td>
+                                                <td className="px-8 py-5 text-[13px] text-slate-500 font-semibold tracking-wide">Sem {sub.semester} &bull; <span className="font-extrabold text-orange-600 bg-orange-50 px-2.5 py-0.5 rounded-lg ml-1">{sub.credits} Crd</span></td>
+                                                <td className="px-8 py-5 text-[14px] text-purple-700 font-bold">{sub.professor || "--"}</td>
+                                                <td className="px-8 py-5">
+                                                    <span className={clsx("px-3 py-1 text-[11px] font-bold uppercase tracking-widest rounded-full border", sub.status === "Active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200")}>{sub.status}</span>
                                                 </td>
-                                                <td className="px-6 py-4">
+                                                <td className="px-8 py-5">
                                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
-                                                        <button onClick={() => handleEditClick(sub)} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-lg transition"><Edit size={18} /></button>
-                                                        <button onClick={() => handleDeleteClick(sub.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"><Trash2 size={18} /></button>
+                                                        <button onClick={() => handleEditClick(sub)} className="p-2 text-slate-400 hover:text-amber-500 hover:bg-amber-50 rounded-xl transition"><Edit size={18} /></button>
+                                                        <button onClick={() => handleDeleteClick(sub.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"><Trash2 size={18} /></button>
                                                     </div>
                                                 </td>
                                             </motion.tr>
@@ -258,18 +300,23 @@ export default function Subjects() {
             </AnimatePresence>
 
             {/* Global Pagination Bar */}
-            <div className="flex items-center justify-between text-sm text-slate-500">
-                <p>Showing {processedSubjects.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, processedSubjects.length)} of {processedSubjects.length} entries</p>
-                <div className="flex gap-1 items-center">
-                    <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="p-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/80 disabled:opacity-50 transition-colors"><ChevronLeft size={16} /></button>
-                    <span className="px-3 font-semibold text-slate-700 dark:text-slate-300">Page {currentPage} of {totalPages}</span>
-                    <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="p-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/80 disabled:opacity-50 transition-colors"><ChevronRight size={16} /></button>
+            {paginatedSubjects.length > 0 && (
+                <div className="flex items-center justify-between text-sm text-slate-500 bg-[#F8FAFC] p-5 rounded-[20px] border border-slate-100 mt-2">
+                    <p className="font-medium">Showing {processedSubjects.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, processedSubjects.length)} of {processedSubjects.length} entries</p>
+                    <div className="flex gap-2 items-center">
+                        <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="p-2 rounded-[10px] bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-30 transition-colors shadow-sm"><ChevronLeft size={16} /></button>
+                        <span className="px-2 font-bold text-slate-700">Page {currentPage} of {totalPages}</span>
+                        <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages} className="p-2 rounded-[10px] bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-30 transition-colors shadow-sm"><ChevronRight size={16} /></button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {paginatedSubjects.length === 0 && (
-                <div className="w-full text-center py-12 text-slate-500 dark:text-slate-400">
-                    No subjects found matching your criteria.
+                <div className="w-full text-center py-24 text-slate-500">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        <BookOpen size={32} className="text-slate-300" />
+                    </div>
+                    <p className="font-medium text-slate-600">No subjects found matching your criteria.</p>
                 </div>
             )}
 
@@ -277,62 +324,60 @@ export default function Subjects() {
             <AnimatePresence>
                 {isAddModalOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-                        <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }} className="relative bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-lg w-full shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto custom-scrollbar">
-                            <button type="button" onClick={() => setIsAddModalOpen(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 transition-colors">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAddModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+                        <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }} className="relative bg-white rounded-[24px] p-8 md:p-10 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                            <button type="button" onClick={() => setIsAddModalOpen(false)} className="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors">
                                 <X size={20} />
                             </button>
-                            <h2 className="text-2xl font-bold mb-6 text-slate-800 dark:text-white">{isEditMode ? 'Edit Subject' : 'Add New Subject'}</h2>
+                            <h2 className="text-2xl font-extrabold mb-8 text-slate-900 tracking-tight">{isEditMode ? 'Edit Subject' : 'Add New Subject'}</h2>
                             <form onSubmit={handleSave}>
-                                <div className="space-y-4">
-                                    <div className="grid grid-cols-3 gap-4">
+                                <div className="space-y-5">
+                                    <div className="grid grid-cols-3 gap-5">
                                         <div className="col-span-2">
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Subject Name <span className="text-red-500">*</span></label>
-                                            <input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} type="text" className="w-full bg-slate-50 dark:bg-slate-800 border bg-transparent border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. Machine Learning" />
+                                            <InputField id="s-name" label="Subject Name" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Code <span className="text-red-500">*</span></label>
-                                            <input required value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} type="text" className="w-full bg-slate-50 dark:bg-slate-800 border bg-transparent border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="SUB104" />
+                                            <InputField id="s-code" label="Code" required value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Department <span className="text-red-500">*</span></label>
-                                            <select required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 outline-none">
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="relative group flex flex-col">
+                                            <label className="absolute left-4 top-2 text-[11px] font-bold text-emerald-600 uppercase tracking-wider z-10">Department <span className="text-rose-500">*</span></label>
+                                            <select required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 font-medium appearance-none cursor-pointer">
                                                 <option value="" disabled>Select Dept</option>
                                                 {departments.map(d => <option key={d.code} value={d.code}>{d.code}</option>)}
                                             </select>
+                                            <ChevronDown size={16} className="absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Semester <span className="text-red-500">*</span></label>
-                                            <select required value={formData.semester} onChange={e => setFormData({ ...formData, semester: Number(e.target.value) })} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 outline-none">
+                                        <div className="relative group flex flex-col">
+                                            <label className="absolute left-4 top-2 text-[11px] font-bold text-emerald-600 uppercase tracking-wider z-10">Semester <span className="text-rose-500">*</span></label>
+                                            <select required value={formData.semester} onChange={e => setFormData({ ...formData, semester: Number(e.target.value) })} className="w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 font-medium appearance-none cursor-pointer">
                                                 {[1, 2, 3, 4, 5, 6, 7, 8].map(s => <option key={s} value={s}>{s}</option>)}
                                             </select>
+                                            <ChevronDown size={16} className="absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Credits</label>
-                                            <input value={formData.credits} onChange={e => setFormData({ ...formData, credits: Number(e.target.value) })} type="number" className="w-full bg-slate-50 dark:bg-slate-800 border bg-transparent border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Status</label>
-                                            <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 outline-none">
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <InputField id="s-credits" label="Credits" type="number" value={formData.credits} onChange={e => setFormData({ ...formData, credits: Number(e.target.value) })} />
+
+                                        <div className="relative group flex flex-col">
+                                            <label className="absolute left-4 top-2 text-[11px] font-bold text-emerald-600 uppercase tracking-wider z-10">Status</label>
+                                            <select value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })} className="w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 font-medium appearance-none cursor-pointer">
                                                 <option value="Active">Active</option>
                                                 <option value="Archived">Archived</option>
                                             </select>
+                                            <ChevronDown size={16} className="absolute right-4 top-1/2 mt-1 -translate-y-1/2 text-slate-400 pointer-events-none" />
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1 text-slate-700 dark:text-slate-300">Assign Professor (Optional)</label>
-                                        <input value={formData.professor} onChange={e => setFormData({ ...formData, professor: e.target.value })} type="text" className="w-full bg-slate-50 dark:bg-slate-800 border bg-transparent border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. Dr. Ramesh" />
-                                    </div>
+
+                                    <InputField id="s-prof" label="Assign Professor (Optional)" value={formData.professor} onChange={e => setFormData({ ...formData, professor: e.target.value })} />
+
                                 </div>
-                                <div className="mt-8 flex justify-end gap-3">
-                                    <button type="button" disabled={isSaving} onClick={() => setIsAddModalOpen(false)} className="px-5 py-2.5 rounded-xl text-slate-600 border border-transparent hover:border-slate-200 font-medium transition disabled:opacity-50">Cancel</button>
-                                    <button type="submit" disabled={isSaving} className="flex items-center justify-center gap-2 min-w-[140px] px-5 py-2.5 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/20 hover:bg-blue-700 transition disabled:bg-blue-400">
+                                <div className="mt-10 flex justify-end gap-4">
+                                    <button type="button" disabled={isSaving} onClick={() => setIsAddModalOpen(false)} className="px-6 py-3 rounded-[16px] text-slate-600 border border-slate-200 hover:bg-slate-50 font-bold transition-colors disabled:opacity-50">Cancel</button>
+                                    <button type="submit" disabled={isSaving} className="flex justify-center items-center gap-2 min-w-[160px] px-6 py-3 rounded-[16px] bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold hover:shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none">
                                         {isSaving && <Loader2 size={16} className="animate-spin" />}
-                                        {isSaving ? 'Saving...' : (isEditMode ? 'Update Subject' : 'Save Subject')}
+                                        {isSaving ? 'Saving...' : (isEditMode ? 'Update' : 'Save')}
                                     </button>
                                 </div>
                             </form>
