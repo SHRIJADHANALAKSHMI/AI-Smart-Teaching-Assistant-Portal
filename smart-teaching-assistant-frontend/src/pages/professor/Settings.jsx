@@ -212,7 +212,7 @@ export default function Settings() {
                                 <div className="flex items-center gap-3">
                                     <Smartphone className="text-gray-400" />
                                     <div>
-                                        <p className="font-medium text-sm text-gray-900 flex items-center gap-2">Windows PC - Chrome <Badge variant="success">Current</Badge></p>
+                                        <p className="font-medium text-sm text-gray-900 flex items-center gap-2">Windows PC - Chrome <span className="text-xs bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-xl font-bold">Current</span></p>
                                         <p className="text-xs text-gray-500">Last active: Just now</p>
                                     </div>
                                 </div>
@@ -253,8 +253,8 @@ export default function Settings() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === tab.id
-                                    ? 'bg-white shadow-sm border border-gray-200/60 text-orange-600'
-                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent'
+                                ? 'bg-white shadow-sm border border-gray-200/60 text-orange-600'
+                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-transparent'
                                 }`}
                         >
                             <span className={activeTab === tab.id ? "text-orange-500" : "text-gray-400"}>{tab.icon}</span>

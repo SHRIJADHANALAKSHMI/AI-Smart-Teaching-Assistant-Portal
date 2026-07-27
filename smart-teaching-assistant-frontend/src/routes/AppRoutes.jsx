@@ -1,10 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-// College Admin Layout
-import CollegeAdminLayout from "../components/collegeadmin/Layout/CollegeAdminLayout";
 
-// College Admin Pages
-import Dashboard from "../pages/collegeadmin/DashBoard";
+import CollegeAdminLayout from "../components/collegeadmin/Layout/CollegeAdminLayout";
+import Dashboard from "../pages/collegeadmin/Dashboard";
 import Department from "../pages/collegeadmin/Department";
 import Subjects from "../pages/collegeadmin/Subjects";
 import Professor from "../pages/collegeadmin/Professor";
@@ -13,9 +11,7 @@ import CollegeProfile from "../pages/collegeadmin/CollegeProfile";
 import CollegeSettings from "../pages/collegeadmin/Settings";
 import Notifications from "../pages/collegeadmin/Notifications";
 import CollegeAnalytics from "../pages/collegeadmin/AIAnalytics";
-
-// Professor Layout & Pages
-import ProfessorLayout from "../components/professor/layout/ProfessorLayout";
+import ProfessorLayout from "../components/professor/Layout/ProfessorLayout";
 import ProfessorDashboard from "../pages/professor/ProfessorDashboard";
 import MySubjects from "../pages/professor/MySubjects";
 import ChapterWorkspace from "../pages/professor/ChapterWorkspace";
@@ -29,8 +25,8 @@ import AIHistory from "../pages/professor/AIHistory";
 import Analytics from "../pages/professor/Analytics";
 import Settings from "../pages/professor/Settings";
 
-// Placeholder specifically for new routes we added to sidebar
-import { GenericPagePlaceholder } from "../components/professor/layout/GenericPagePlaceholder";
+
+import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
 
 import { useParams } from "react-router-dom";
 

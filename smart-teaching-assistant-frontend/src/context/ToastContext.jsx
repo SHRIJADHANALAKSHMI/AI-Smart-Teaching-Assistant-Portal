@@ -15,8 +15,12 @@ export const useToast = () => {
 export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
 
-    const addToast = useCallback((message, type = 'success', duration = 3000) => {
-        const id = Math.random().toString(36).substring(2, 9);
+    const removeToast = useCallback((id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, []);
+
+    const addToast = useCallback((message, type = 'info', duration = 3000) => {
+        const id = Date.now().toString();
         setToasts(prev => [...prev, { id, message, type }]);
 
         if (duration > 0) {
@@ -25,11 +29,7 @@ export const ToastProvider = ({ children }) => {
             }, duration);
         }
         return id;
-    }, []);
-
-    const removeToast = useCallback((id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    }, []);
+    }, [removeToast]);
 
     const getIcon = (type) => {
         switch (type) {

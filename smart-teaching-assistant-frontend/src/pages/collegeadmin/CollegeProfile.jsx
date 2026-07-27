@@ -5,6 +5,31 @@ import toast from "react-hot-toast";
 import clsx from "clsx";
 import { useCollegeAdmin } from "../../context/CollegeAdminContext";
 
+const InputField = ({ id, label, value, onChange, type = "text", required = false }) => (
+    <div className="relative group">
+        <input
+            id={id}
+            required={required}
+            value={value}
+            onChange={onChange}
+            type={type}
+            className="peer w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 placeholder-transparent font-medium"
+            placeholder={label}
+        />
+        <label
+            htmlFor={id}
+            className={clsx(
+                "absolute left-4 top-2 text-[11px] font-bold uppercase tracking-wider transition-all pointer-events-none",
+                "peer-placeholder-shown:text-[14px] peer-placeholder-shown:top-3.5 peer-placeholder-shown:normal-case peer-placeholder-shown:text-slate-400 peer-placeholder-shown:font-medium",
+                "peer-focus:text-[11px] peer-focus:top-2 peer-focus:uppercase peer-focus:font-bold peer-focus:text-emerald-600",
+                value ? "text-emerald-600" : "text-slate-400"
+            )}
+        >
+            {label} {required && <span className="text-rose-500">*</span>}
+        </label>
+    </div>
+);
+
 export default function CollegeProfile() {
     const { profile, updateProfile } = useCollegeAdmin();
 
@@ -45,30 +70,6 @@ export default function CollegeProfile() {
         }, 600);
     };
 
-    const InputField = ({ id, label, value, onChange, type = "text", required = false }) => (
-        <div className="relative group">
-            <input
-                id={id}
-                required={required}
-                value={value}
-                onChange={onChange}
-                type={type}
-                className="peer w-full bg-slate-50 border border-slate-200 rounded-[16px] px-4 pt-6 pb-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-800 placeholder-transparent font-medium"
-                placeholder={label}
-            />
-            <label
-                htmlFor={id}
-                className={clsx(
-                    "absolute left-4 top-2 text-[11px] font-bold uppercase tracking-wider transition-all pointer-events-none",
-                    "peer-placeholder-shown:text-[14px] peer-placeholder-shown:top-3.5 peer-placeholder-shown:normal-case peer-placeholder-shown:text-slate-400 peer-placeholder-shown:font-medium",
-                    "peer-focus:text-[11px] peer-focus:top-2 peer-focus:uppercase peer-focus:font-bold peer-focus:text-emerald-600",
-                    value ? "text-emerald-600" : "text-slate-400"
-                )}
-            >
-                {label} {required && <span className="text-rose-500">*</span>}
-            </label>
-        </div>
-    );
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto space-y-6 pb-12 relative w-full">
