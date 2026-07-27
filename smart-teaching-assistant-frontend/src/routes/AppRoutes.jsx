@@ -27,6 +27,8 @@ import Settings from "../pages/professor/Settings";
 
 
 import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
+// Placeholder specifically for new routes we added to sidebar
+import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
 
 import { useParams } from "react-router-dom";
 
