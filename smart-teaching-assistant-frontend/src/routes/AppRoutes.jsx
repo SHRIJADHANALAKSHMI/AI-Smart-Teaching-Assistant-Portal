@@ -15,7 +15,7 @@ import Notifications from "../pages/collegeadmin/Notifications";
 import CollegeAnalytics from "../pages/collegeadmin/AIAnalytics";
 
 // Professor Layout & Pages
-import ProfessorLayout from "../components/professor/layout/ProfessorLayout";
+import ProfessorLayout from "../components/professor/Layout/ProfessorLayout";
 import ProfessorDashboard from "../pages/professor/ProfessorDashboard";
 import MySubjects from "../pages/professor/MySubjects";
 import ChapterWorkspace from "../pages/professor/ChapterWorkspace";
@@ -30,7 +30,7 @@ import Analytics from "../pages/professor/Analytics";
 import Settings from "../pages/professor/Settings";
 
 // Placeholder specifically for new routes we added to sidebar
-import { GenericPagePlaceholder } from "../components/professor/layout/GenericPagePlaceholder";
+import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
 
 import { useParams } from "react-router-dom";
 
