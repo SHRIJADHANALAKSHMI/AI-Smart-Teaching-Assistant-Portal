@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 
 import CollegeAdminLayout from "../components/collegeadmin/Layout/CollegeAdminLayout";
-import Dashboard from "../pages/collegeadmin/Dashboard";
+import Dashboard from "../pages/collegeadmin/DashBoard";
 import Department from "../pages/collegeadmin/Department";
 import Subjects from "../pages/collegeadmin/Subjects";
 import Professor from "../pages/collegeadmin/Professor";
