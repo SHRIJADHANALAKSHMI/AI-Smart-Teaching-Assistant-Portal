@@ -42,7 +42,7 @@ import Settings from "../pages/professor/Settings";
 
 
 // Placeholder specifically for new routes we added to sidebar
-import { GenericPagePlaceholder } from "../components/professor/layout/GenericPagePlaceholder";
+import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
 
 import { useParams } from "react-router-dom";
 
