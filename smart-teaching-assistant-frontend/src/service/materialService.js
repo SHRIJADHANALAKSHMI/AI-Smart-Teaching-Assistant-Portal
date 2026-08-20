@@ -5,10 +5,23 @@ export const getMaterials = async () => {
     return response.data;
 };
 
-export const uploadMaterial = async (formData) => {
+export const createMaterial = async (data) => {
+    const response = await API.post("/materials", data);
+    return response.data;
+};
+
+export const uploadMaterial = async ({ file, subjectId }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("subjectId", subjectId);
     const response = await API.post("/materials/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
+    return response.data;
+};
+
+export const downloadMaterial = async (id) => {
+    const response = await API.get(`/materials/${id}/download`, { responseType: "blob" });
     return response.data;
 };
 

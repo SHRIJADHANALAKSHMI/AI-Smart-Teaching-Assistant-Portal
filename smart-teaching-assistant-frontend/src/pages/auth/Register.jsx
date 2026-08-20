@@ -1,117 +1,61 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaGraduationCap, FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { getProfessorInvite, registerProfessor } from "../../service/authService";
 
 export default function Register() {
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const token = searchParams.get("token");
+    const [invite, setInvite] = useState(null);
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(Boolean(token));
+    const [saving, setSaving] = useState(false);
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        if (!name || !email || !password || !confirmPassword) {
-            alert("Please fill all fields");
-            return;
-        }
+    useEffect(() => {
+        if (!token) return;
+        getProfessorInvite(token)
+            .then(setInvite)
+            .catch((requestError) => setError(requestError.message || "This invitation is not valid."))
+            .finally(() => setLoading(false));
+    }, [token]);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setError("");
         if (password !== confirmPassword) {
-            alert("Passwords do not match");
+            setError("Passwords do not match.");
             return;
         }
-        if (password.length < 6) {
-            alert("Password must be at least 6 characters");
-            return;
+        setSaving(true);
+        try {
+            await registerProfessor(token, password);
+            navigate("/login", { replace: true, state: { message: "Account activated. Sign in with your new password." } });
+        } catch (requestError) {
+            setError(requestError.message || "Unable to activate your account.");
+        } finally {
+            setSaving(false);
         }
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-            alert("Registration successful! Please login.");
-            navigate("/");
-        }, 1500);
     };
 
-    return (
-        <div className="min-h-screen flex bg-gray-100">
-            <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-700 via-indigo-800 to-purple-900 text-white p-14 flex-col justify-center">
-                <h1 className="text-5xl font-bold leading-tight mb-6">
-                    Join Smart Teaching<br />Assistant
-                </h1>
-                <p className="text-lg text-gray-200 mb-10">
-                    Create your account to access AI-powered teaching tools and resources.
-                </p>
-            </div>
+    if (!token) {
+        return <Page><h2 className="text-2xl font-extrabold text-slate-900">Registration is invitation-only</h2><p className="mt-3 text-slate-600">Ask your college administrator to send a professor invitation, then open the link from that email.</p><Link to="/login" className="mt-6 inline-block font-bold text-purple-600">Back to sign in</Link></Page>;
+    }
 
-            <div className="flex-1 flex items-center justify-center p-6">
-                <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
-                    <div className="flex justify-center mb-6">
-                        <div className="bg-blue-100 p-5 rounded-full">
-                            <FaGraduationCap className="text-4xl text-blue-700" />
-                        </div>
-                    </div>
+    return <Page>
+        <h2 className="text-2xl font-extrabold text-slate-900">Activate your professor account</h2>
+        {loading && <p className="mt-4 text-slate-600">Checking invitation…</p>}
+        {error && <div className="mt-4 rounded-xl bg-red-50 p-3 text-sm font-medium text-red-600">{error}</div>}
+        {invite && <form className="mt-6 space-y-5" onSubmit={handleSubmit}>
+            <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-700"><p className="font-bold">{invite.name}</p><p>{invite.email}</p></div>
+            <label className="block text-sm font-semibold text-slate-700">Password<input minLength="6" required type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3" /></label>
+            <label className="block text-sm font-semibold text-slate-700">Confirm password<input minLength="6" required type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-3" /></label>
+            <button disabled={saving} className="w-full rounded-xl bg-purple-600 py-3 font-bold text-white disabled:opacity-60">{saving ? "Activating…" : "Activate account"}</button>
+        </form>}
+    </Page>;
+}
 
-                    <h2 className="text-3xl font-bold text-center mb-2">Create Account</h2>
-                    <p className="text-center text-gray-500 mb-8">Sign up to get started</p>
-
-                    <form onSubmit={handleRegister} className="space-y-5">
-                        <div>
-                            <label className="block mb-2 font-medium">Full Name</label>
-                            <div className="relative">
-                                <FaUser className="absolute left-4 top-4 text-gray-400" />
-                                <input type="text" placeholder="Enter your full name" value={name} onChange={(e) => setName(e.target.value)}
-                                    className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-medium">Email Address</label>
-                            <div className="relative">
-                                <FaEnvelope className="absolute left-4 top-4 text-gray-400" />
-                                <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-medium">Password</label>
-                            <div className="relative">
-                                <FaLock className="absolute left-4 top-4 text-gray-400" />
-                                <input type={showPassword ? "text" : "password"} placeholder="Create password" value={password} onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full border rounded-xl pl-12 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-4 text-gray-500">
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 font-medium">Confirm Password</label>
-                            <div className="relative">
-                                <FaLock className="absolute left-4 top-4 text-gray-400" />
-                                <input type="password" placeholder="Confirm password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                            </div>
-                        </div>
-
-                        <button type="submit" disabled={loading}
-                            className="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl font-semibold transition">
-                            {loading ? (
-                                <div className="flex justify-center items-center gap-2">
-                                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Creating Account...
-                                </div>
-                            ) : "Register"}
-                        </button>
-                    </form>
-
-                    <p className="text-center mt-6 text-gray-600">
-                        Already have an account?
-                        <Link to="/" className="text-blue-700 font-semibold ml-2 hover:underline">Login</Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
+function Page({ children }) {
+    return <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4"><div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">{children}</div></div>;
 }

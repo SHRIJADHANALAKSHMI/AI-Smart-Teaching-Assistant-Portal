@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
+    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8081/api",
     headers: {
         "Content-Type": "application/json",
     },
@@ -16,15 +16,36 @@ API.interceptors.request.use((config) => {
     return config;
 });
 
-// Response interceptor for error handling
+// Response interceptor for error handling and ApiResponse unpacking
 API.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Automatically unwrap Spring Boot ApiResponse DTOs if present
+        if (response.data && typeof response.data.success === 'boolean') {
+            if (response.data.success) {
+                // Replace the axios response data with our actual payload
+                response.data = response.data.data;
+            } else {
+                // It's a structured error from the backend but returned HTTP 200 (though usually it's 400/500)
+                return Promise.reject(new Error(response.data.message || "Unknown error"));
+            }
+        }
+        return response;
+    },
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem("token");
             localStorage.removeItem("role");
-            window.location.href = "/";
+            localStorage.removeItem("currentUser");
+            if (window.location.pathname !== "/login") {
+                window.location.href = "/login";
+            }
         }
+
+        // Try to extract the backend's error message if available
+        if (error.response?.data?.message) {
+            error.message = error.response.data.message;
+        }
+
         return Promise.reject(error);
     }
 );

@@ -24,3 +24,13 @@ export const deleteCollege = async (id) => {
     const response = await API.delete(`/colleges/${id}`);
     return response.data;
 };
+
+export const getMyCollegeProfile = async () => {
+    const response = await API.get("/college/profile");
+    return response.data;
+};
+
+export const updateMyCollegeProfile = async (data) => {
+    const response = await API.put("/college/profile", data);
+    return response.data;
+};

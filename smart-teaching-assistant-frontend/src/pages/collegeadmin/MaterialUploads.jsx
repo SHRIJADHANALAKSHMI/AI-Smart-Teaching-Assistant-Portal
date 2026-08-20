@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, FileText, Filter, HardDrive, CheckCircle2, ChevronDown } from "lucide-react";
-import { dummyMaterials } from "../../utils/dummyData";
+import { UploadCloud, FileText, Filter, HardDrive, CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
+import { getMaterials } from "../../service/materialService";
 import clsx from "clsx";
 
 export default function MaterialUploads() {
+    const [materials, setMaterials] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [isDragging, setIsDragging] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
@@ -34,6 +36,20 @@ export default function MaterialUploads() {
             });
         }, 200);
     };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await getMaterials();
+                setMaterials(data || []);
+            } catch (error) {
+                console.error("Error fetching materials:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6 pb-12 w-full">
@@ -149,47 +165,53 @@ export default function MaterialUploads() {
                     </div>
 
                     <div className="flex-1 overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-                        {dummyMaterials.map((mat, idx) => (
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: idx * 0.05 }}
-                                key={mat.id}
-                                className="group flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-[20px] border border-slate-100 bg-white hover:bg-[#F8FAFC] hover:border-slate-200 hover:shadow-sm transition-all gap-4 overflow-hidden relative"
-                            >
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {loading ? (
+                            <div className="flex justify-center p-12"><Loader2 className="animate-spin text-emerald-500" size={32} /></div>
+                        ) : (
+                            <AnimatePresence>
+                                {materials.map((mat, idx) => (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: idx * 0.05 }}
+                                        key={mat.id}
+                                        className="group flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-[20px] border border-slate-100 bg-white hover:bg-[#F8FAFC] hover:border-slate-200 hover:shadow-sm transition-all gap-4 overflow-hidden relative"
+                                    >
+                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                                <div className="flex items-start sm:items-center gap-5 relative z-10 w-full sm:w-auto">
-                                    <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-[16px] flex items-center justify-center shrink-0 border border-emerald-100">
-                                        <FileText size={24} />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <h4 className="font-extrabold text-[16px] text-slate-900 mb-1 truncate">{mat.title}</h4>
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] text-slate-500 font-medium">
-                                            <span className="font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md shadow-sm">{mat.subject}</span>
-                                            <span>&bull;</span>
-                                            <span>{mat.professor}</span>
-                                            <span>&bull;</span>
-                                            <span>{mat.date}</span>
+                                        <div className="flex items-start sm:items-center gap-5 relative z-10 w-full sm:w-auto">
+                                            <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-[16px] flex items-center justify-center shrink-0 border border-emerald-100">
+                                                <FileText size={24} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="font-extrabold text-[16px] text-slate-900 mb-1 truncate">{mat.title}</h4>
+                                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] text-slate-500 font-medium">
+                                                    <span className="font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md shadow-sm">Subject ID: {mat.subjectId}</span>
+                                                    <span>&bull;</span>
+                                                    <span>Prof ID: {mat.professorId}</span>
+                                                    <span>&bull;</span>
+                                                    <span>{mat.date}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto relative z-10 border-t sm:border-0 border-slate-100 pt-3 sm:pt-0 mt-2 sm:mt-0">
-                                    <span className="px-3 py-1.5 bg-slate-100 text-[11px] font-bold uppercase tracking-wider rounded-[10px] text-slate-600 border border-slate-200">
-                                        {mat.type} &bull; {mat.size}
-                                    </span>
-                                    <button className="text-[13px] font-bold text-slate-600 hover:text-emerald-600 bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 px-4 py-2 rounded-[12px] transition-all shadow-sm">
-                                        Download
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))}
-                        {dummyMaterials.length === 0 && (
-                            <div className="w-full text-center py-20 text-slate-500">
-                                <FileText size={48} className="text-slate-300 mx-auto mb-4" />
-                                <p className="font-medium">No materials uploaded yet.</p>
-                            </div>
+                                        <div className="flex items-center justify-between sm:justify-end gap-5 w-full sm:w-auto relative z-10 border-t sm:border-0 border-slate-100 pt-3 sm:pt-0 mt-2 sm:mt-0">
+                                            <span className="px-3 py-1.5 bg-slate-100 text-[11px] font-bold uppercase tracking-wider rounded-[10px] text-slate-600 border border-slate-200">
+                                                {mat.type} &bull; {mat.size}
+                                            </span>
+                                            <button className="text-[13px] font-bold text-slate-600 hover:text-emerald-600 bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 px-4 py-2 rounded-[12px] transition-all shadow-sm">
+                                                Download
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                {materials.length === 0 && (
+                                    <div className="w-full text-center py-20 text-slate-500">
+                                        <FileText size={48} className="text-slate-300 mx-auto mb-4" />
+                                        <p className="font-medium">No materials uploaded yet.</p>
+                                    </div>
+                                )}
+                            </AnimatePresence>
                         )}
                     </div>
                 </div>

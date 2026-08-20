@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Download, FileText, Bookmark, Copy, RefreshCw, BookOpen, Clock, Target, AlertTriangle, MonitorPlay, Library, Lightbulb, TrendingUp, Zap, HelpCircle } from 'lucide-react';
-import { subjects } from '../../data/mock/subjects';
-import { chapters } from '../../data/mock/chapters';
+import { ChevronRight, Download, FileText, Bookmark, Copy, RefreshCw, BookOpen, Clock, Target, AlertTriangle, MonitorPlay, Library, Lightbulb, TrendingUp, Zap, HelpCircle, Loader2 } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { simulateAction, simulateDownload } from '../../utils/simulateAction';
+import { getChaptersBySubject } from '../../service/chapterService';
+import { getSubjects } from '../../service/subjectService';
 
 // Import Tabs
 import { OverviewTab } from '../../components/professor/workspace/OverviewTab';
@@ -45,21 +45,48 @@ export default function ChapterWorkspace() {
     const navigate = useNavigate();
     const { addToast } = useToast();
 
-    useEffect(() => {
-        if (!subjectId || !chapterId) {
-            navigate('/professor/upload', { replace: true });
-        }
-    }, [subjectId, chapterId, navigate]);
-
-    const subject = subjects.find(s => s.id === (subjectId || "CS401")) || subjects[0];
-    const subjectChapters = chapters.filter(c => c.subjectId === subject.id);
-    const selectedChapterIndex = subjectChapters.findIndex(c => c.id === chapterId);
-    const activeChapter = selectedChapterIndex !== -1 ? subjectChapters[selectedChapterIndex] : subjectChapters[0];
+    const [subject, setSubject] = useState(null);
+    const [subjectChapters, setSubjectChapters] = useState([]);
+    const [activeChapter, setActiveChapter] = useState(null);
+    const [selectedChapterIndex, setSelectedChapterIndex] = useState(-1);
+    const [loading, setLoading] = useState(true);
 
     const [activeTab, setActiveTab] = useState('overview');
     const [isRegenerating, setIsRegenerating] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
+
+    useEffect(() => {
+        if (!subjectId || !chapterId) {
+            navigate('/professor/upload', { replace: true });
+            return;
+        }
+
+        const fetchWorkspaceData = async () => {
+            try {
+                const [allSubjects, chaptersData] = await Promise.all([
+                    getSubjects(),
+                    getChaptersBySubject(subjectId)
+                ]);
+
+                const currSubj = allSubjects?.find(s => String(s.id) === String(subjectId)) || { id: subjectId, name: "Subject" };
+                setSubject(currSubj);
+
+                const safeChapters = chaptersData || [];
+                setSubjectChapters(safeChapters);
+
+                const idx = safeChapters.findIndex(c => String(c.id) === String(chapterId));
+                setSelectedChapterIndex(idx);
+                setActiveChapter(idx !== -1 ? safeChapters[idx] : safeChapters[0]);
+            } catch (err) {
+                console.error("Error loading chapter data", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchWorkspaceData();
+    }, [subjectId, chapterId, navigate]);
 
     const handleBookmark = () => {
         setIsBookmarked(!isBookmarked);
@@ -106,6 +133,15 @@ export default function ChapterWorkspace() {
             default: return <OverviewTab />;
         }
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center">
+                <Loader2 size={40} className="animate-spin text-emerald-500 mb-4" />
+                <h2 className="text-xl font-bold text-slate-700">Loading AI Workspace...</h2>
+            </div>
+        );
+    }
 
     if (!activeChapter) {
         return (

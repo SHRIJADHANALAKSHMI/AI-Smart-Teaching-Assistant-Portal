@@ -1,70 +1,70 @@
-import React from "react";
-import {FaUniversity,FaUserTie,FaUser,FaRobot,FaBars,FaPlus,
-  FaCog, FaChartLine,
+import React, { useState, useEffect } from "react";
+import {
+  FaUniversity,
+  FaUserTie,
+  FaUser,
+  FaRobot,
+  FaBars,
+  FaPlus,
+  FaCog,
+  FaChartLine,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { getDashboardStats, getColleges } from "../../service/superAdminService";
+import { useToast } from "../../context/ToastContext";
 
 export default function SuperAdminDashboard() {
   const navigate = useNavigate();
+  const { addToast } = useToast();
+
+  const [statsData, setStatsData] = useState({
+    totalColleges: 0,
+    totalProfessors: 0,
+    totalAdmins: 0
+  });
+
+  const [colleges, setColleges] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const statsRes = await getDashboardStats();
+        setStatsData(statsRes);
+
+        const collegesRes = await getColleges();
+        setColleges(collegesRes.slice(0, 5)); // show latest 5
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error);
+        addToast("Error fetching dashboard data", "error");
+      }
+    };
+    fetchData();
+  }, [addToast]);
+
   const stats = [
     {
       title: "Total Colleges",
-      value: 120,
+      value: statsData.totalColleges || 0,
       icon: <FaUniversity size={30} />,
       color: "bg-blue-500",
     },
     {
       title: "Total College Admins",
-      value: 50,
+      value: statsData.totalAdmins || 0,
       icon: <FaUserTie size={30} />,
       color: "bg-green-500",
     },
     {
       title: "Total Professors",
-      value: 200,
+      value: statsData.totalProfessors || 0,
       icon: <FaUser size={30} />,
       color: "bg-red-500",
     },
     {
       title: "AI Requests Today",
-      value: 1511,
+      value: 1511, // Still dummy as there's no ai metrics API fully built yet
       icon: <FaRobot size={30} />,
       color: "bg-yellow-500",
-    },
-  ];
-
-  const colleges = [
-    {
-      id: 1,
-      name: "PSG College of Technology (PSGCT)",
-      location: "Coimbatore, Tamil Nadu",
-      admin: "Shri",
-      totalProfessors: 50,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "KGISL Institute of Technology",
-      location: "Coimbatore, Tamil Nadu",
-      admin: "Janaki",
-      totalProfessors: 60,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Kumaraguru College of Technology",
-      location: "Coimbatore, Tamil Nadu",
-      admin: "Karthik",
-      totalProfessors: 45,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Coimbatore Institute of Technology",
-      location: "Coimbatore, Tamil Nadu",
-      admin: "Sathish",
-      totalProfessors: 70,
-      status: "Pending",
     },
   ];
 
@@ -88,179 +88,165 @@ export default function SuperAdminDashboard() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-64 bg-blue-900 text-white p-6 hidden md:block">
-        <h2 className="text-2xl font-bold mb-6">STA Portal</h2>
-
-        <ul className="space-y-3">
-           <li onClick={() => navigate("/superadmin")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaBars />
-            Dashboard
-          </li>
-
-          <li onClick={() => navigate("/superadmin/colleges")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaPlus />
-            Add College
-          </li>
-
-          <li onClick={() => navigate("/superadmin/analytics")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaChartLine />
-            Analytics
-          </li>
-
-          <li onClick={() => navigate("/superadmin/ai-monitoring")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaRobot />
-            AI Monitoring
-          </li>
-
-          <li onClick={() => navigate("/superadmin/invite-college")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaCog />
-            Invite College Admin
-          </li>
-          <li onClick={() => navigate("/superadmin/settings")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaCog />
-            Settings
-          </li>
-
-          <li onClick={() => navigate("/superadmin/logout")} className="flex items-center gap-2 p-2 rounded hover:bg-blue-700 cursor-pointer">
-            <FaUserTie />
-            Logout
-          </li>
-        </ul>
-      </aside>
-
-      <div className="flex-1">
-        <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <FaBars className="text-gray-700 md:hidden" size={24} />
-            <h1 className="text-2xl font-bold text-gray-800">
-              Super Admin Dashboard
-            </h1>
-          </div>
-
-          <div className="font-medium text-gray-700">
-            Welcome, Super Admin !!
-          </div>
-        </header>
-
-        <main className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className={`${stat.color} text-white p-5 rounded-lg shadow`}
-              >
-                <div className="flex items-center gap-4">
-                  {stat.icon}
-
-                  <div>
-                    <h3 className="font-semibold">{stat.title}</h3>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                  </div>
-                </div>
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className={`${stat.color} text-white p-5 rounded-lg shadow-sm transform hover:-translate-y-1 transition`}
+          >
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-white/20 rounded-lg">
+                {stat.icon}
               </div>
-            ))}
-          </div>
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button onClick = {() => navigate("/superadmin/colleges")} className="bg-blue-500 text-white p-4 rounded-lg shadow hover:bg-blue-600 transition">
-                Add College
-              </button>
-
-              <button onClick = {() => navigate("/superadmin/invite-college")} className="bg-green-500 text-white p-4 rounded-lg shadow hover:bg-green-600 transition">
-                Invite College Admin
-              </button>
-
-              <button onClick = {() => navigate("/superadmin/ai-monitoring")} className="bg-yellow-500 text-white p-4 rounded-lg shadow hover:bg-yellow-600 transition">
-                View AI Requests
-              </button>
+              <div>
+                <h3 className="font-semibold text-sm opacity-90">{stat.title}</h3>
+                <p className="text-3xl font-bold">{stat.value}</p>
+              </div>
             </div>
           </div>
+        ))}
+      </div>
 
-          <div className="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              Registered Colleges
-            </h2>
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <h2 className="text-xl font-bold mb-4 text-gray-800 flex items-center gap-2">
+          <span className="w-1.5 h-6 bg-blue-500 rounded-full"></span>
+          Quick Actions
+        </h2>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border">
-                <thead>
-                  <tr className="bg-gray-200">
-                    <th className="p-3 text-left">College</th>
-                    <th className="p-3 text-left">Location</th>
-                    <th className="p-3 text-left">Admin</th>
-                    <th className="p-3 text-left">Professors</th>
-                    <th className="p-3 text-left">Status</th>
-                  </tr>
-                </thead>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button onClick={() => navigate("/superadmin/colleges")} className="flex flex-col items-center justify-center py-6 px-4 bg-blue-50 text-blue-700 font-semibold rounded-xl border border-blue-100 shadow-sm hover:shadow-md hover:bg-blue-100 transition group">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <FaPlus size={20} />
+            </div>
+            Add College
+          </button>
 
-                <tbody>
-                  {colleges.map((college) => (
-                    <tr key={college.id} className="border-t">
-                      <td className="p-3">{college.name}</td>
-                      <td className="p-3">{college.location}</td>
-                      <td className="p-3">{college.admin}</td>
-                      <td className="p-3">{college.totalProfessors}</td>
-                      <td className="p-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-white text-sm ${
-                            college.status === "Active"
-                              ? "bg-green-500"
-                              : "bg-yellow-500"
+          <button onClick={() => navigate("/superadmin/invite-college")} className="flex flex-col items-center justify-center py-6 px-4 bg-green-50 text-green-700 font-semibold rounded-xl border border-green-100 shadow-sm hover:shadow-md hover:bg-green-100 transition group">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <FaCog size={20} />
+            </div>
+            Invite College Admin
+          </button>
+
+          <button onClick={() => navigate("/superadmin/ai-monitoring")} className="flex flex-col items-center justify-center py-6 px-4 bg-yellow-50 text-yellow-700 font-semibold rounded-xl border border-yellow-100 shadow-sm hover:shadow-md hover:bg-yellow-100 transition group">
+            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+              <FaRobot size={20} />
+            </div>
+            View AI Requests
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="p-6 border-b border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-purple-500 rounded-full"></span>
+            Registered Colleges Overview
+          </h2>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-sm font-semibold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4 text-left">College</th>
+                <th className="px-6 py-4 text-left">Location</th>
+                <th className="px-6 py-4 text-left">Admin</th>
+                <th className="px-6 py-4 text-left">Faculty</th>
+                <th className="px-6 py-4 text-left">Status</th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-100">
+              {colleges.map((college) => {
+                const adminName = college.adminName || college.admin || "Unknown Admin";
+                const statusStr = college.status?.toString().toUpperCase() || "PENDING";
+
+                return (
+                  <tr key={college.id} className="hover:bg-gray-50/50 transition">
+                    <td className="px-6 py-4 font-medium text-gray-800">{college.name}</td>
+                    <td className="px-6 py-4 text-gray-600">{college.location || "N/A"}</td>
+                    <td className="px-6 py-4 text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">
+                          {adminName.charAt(0).toUpperCase()}
+                        </div>
+                        {adminName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{college.totalProfessors || 0}</td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusStr === "ACTIVE"
+                          ? "bg-green-100 text-green-800 border border-green-200"
+                          : "bg-amber-100 text-amber-800 border border-amber-200"
                           }`}
-                        >
-                          {college.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      >
+                        {statusStr === "ACTIVE" && <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>}
+                        {statusStr === "PENDING" && <span className="w-1.5 h-1.5 bg-amber-500 rounded-full mr-1.5"></span>}
+                        {statusStr === "REJECTED" && <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-1.5"></span>}
+                        {statusStr}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6 pb-12">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+              Admin Invitations
+            </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-                    
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Admin Invitations
-              </h2>
-
-              <ul className="space-y-3">
-                {invitations.map((invite, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between border-b pb-2"
-                  >
-                    <span>{invite.email}</span>
-                    <span
-                      className={`font-semibold ${
-                        invite.status === "Accepted"
-                          ? "text-green-600"
-                          : "text-yellow-600"
+          <div className="p-6">
+            <ul className="space-y-4">
+              {invitations.map((invite, index) => (
+                <li
+                  key={index}
+                  className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100"
+                >
+                  <span className="font-medium text-gray-700">{invite.email}</span>
+                  <span
+                    className={`font-semibold text-sm px-3 py-1 rounded-full ${invite.status === "Accepted"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-amber-100 text-amber-700"
                       }`}
-                    >
-                      {invite.status}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Recent Activities
-              </h2>
-
-              <ul className="list-disc pl-5 space-y-2">
-                {activities.map((activity, index) => (
-                  <li key={index}>{activity}</li>
-                ))}
-              </ul>
-            </div>
+                  >
+                    {invite.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </main>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-teal-500 rounded-full"></span>
+              Recent System Events
+            </h2>
+          </div>
+          <div className="p-6">
+            <ul className="relative border-l-2 border-gray-200 ml-4 space-y-6">
+              {activities.map((activity, index) => (
+                <li key={index} className="pl-6 relative">
+                  <span className="absolute -left-[9px] top-1 w-4 h-4 bg-white border-2 border-teal-500 rounded-full"></span>
+                  <p className="font-medium text-gray-700 leading-snug">{activity}</p>
+                  <span className="text-xs text-gray-400 mt-1 block">Just now</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

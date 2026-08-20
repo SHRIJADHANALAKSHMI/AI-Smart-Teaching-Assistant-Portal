@@ -1,5 +1,19 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import Home from "../pages/Home";
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
+import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
+
+import SuperAdminLayout from "../layouts/SuperAdminLayout";
+import SuperAdminColleges from "../pages/superadmin/Colleges";
+import SuperAdminAnalytics from "../pages/superadmin/Analytics";
+import SuperAdminAIMonitoring from "../pages/superadmin/AIMonitoring";
+import SuperAdminInviteCollege from "../pages/superadmin/InviteCollegeAdmin";
+import SuperAdminSettings from "../pages/superadmin/Settings";
+import SuperAdminReports from "../pages/superadmin/Reports";
+import SuperAdminAccounts from "../pages/superadmin/AdminManagement";
 
 import CollegeAdminLayout from "../components/collegeadmin/Layout/CollegeAdminLayout";
 import Dashboard from "../pages/collegeadmin/DashBoard";
@@ -28,7 +42,7 @@ import Settings from "../pages/professor/Settings";
 
 
 // Placeholder specifically for new routes we added to sidebar
-import { GenericPagePlaceholder } from "../components/professor/Layout/GenericPagePlaceholder";
+import { GenericPagePlaceholder } from "../components/professor/layout/GenericPagePlaceholder";
 
 import { useParams } from "react-router-dom";
 
@@ -40,11 +54,38 @@ const LegacyWorkspaceRedirect = () => {
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Fallback to professor */}
-      <Route path="/" element={<Navigate to="/professor/dashboard" replace />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Preserve old alias for login just in case */}
+      <Route path="/super-admin/dashboard" element={<Navigate to="/superadmin/dashboard" replace />} />
+      <Route path="/college-admin/dashboard" element={<Navigate to="/collegeadmin" replace />} />
+
+      {/* Super Admin */}
+      <Route path="/superadmin" element={
+        <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+          <SuperAdminLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<SuperAdminDashboard />} />
+        <Route path="colleges" element={<SuperAdminColleges />} />
+        <Route path="analytics" element={<SuperAdminAnalytics />} />
+        <Route path="ai-monitoring" element={<SuperAdminAIMonitoring />} />
+        <Route path="invite-college" element={<SuperAdminInviteCollege />} />
+        <Route path="settings" element={<SuperAdminSettings />} />
+        <Route path="reports" element={<SuperAdminReports />} />
+        <Route path="admins" element={<SuperAdminAccounts />} />
+        <Route path="*" element={<Navigate to="dashboard" replace />} />
+      </Route>
 
       {/* College Admin */}
-      <Route path="/collegeadmin" element={<CollegeAdminLayout />}>
+      <Route path="/collegeadmin" element={
+        <ProtectedRoute allowedRoles={['COLLEGE_ADMIN', 'SUPER_ADMIN']}>
+          <CollegeAdminLayout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
         <Route path="departments" element={<Department />} />
         <Route path="subjects" element={<Subjects />} />
@@ -58,7 +99,11 @@ export default function AppRoutes() {
       </Route>
 
       {/* Professor Portal */}
-      <Route path="/professor" element={<ProfessorLayout />}>
+      <Route path="/professor" element={
+        <ProtectedRoute allowedRoles={['PROFESSOR', 'SUPER_ADMIN']}>
+          <ProfessorLayout />
+        </ProtectedRoute>
+      }>
         {/* We redirect base /professor to dashboard */}
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<ProfessorDashboard />} />
@@ -87,7 +132,7 @@ export default function AppRoutes() {
       </Route>
 
       {/* Global Fallback */}
-      <Route path="*" element={<Navigate to="/professor/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

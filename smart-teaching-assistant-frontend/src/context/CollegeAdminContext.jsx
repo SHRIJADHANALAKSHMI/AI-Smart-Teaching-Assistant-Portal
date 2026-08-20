@@ -1,67 +1,120 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react";
-import { dummyDepartments, dummySubjects, dummyProfessors, dummyNotifications, dummyStats } from "../utils/dummyData";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createDepartment as apiCreateDepartment, deleteDepartment as apiDeleteDepartment, getDepartments, updateDepartment as apiUpdateDepartment } from "../service/departmentService";
+import { createSubject as apiCreateSubject, deleteSubject as apiDeleteSubject, getSubjects, updateSubject as apiUpdateSubject } from "../service/subjectService";
+import { deleteProfessor as apiCancelProfessorInvite, getProfessors, inviteProfessor as apiInviteProfessor } from "../service/professorService";
+import { getCurrentUser } from "../service/authService";
+import { getMyCollegeProfile, updateMyCollegeProfile } from "../service/collegeService";
 
-const CollegeAdminContext = createContext();
+const CollegeAdminContext = createContext(null);
 
-export const useCollegeAdmin = () => useContext(CollegeAdminContext);
+export const useCollegeAdmin = () => {
+    const context = useContext(CollegeAdminContext);
+    if (!context) throw new Error("useCollegeAdmin must be used within CollegeAdminProvider");
+    return context;
+};
 
-export const CollegeAdminProvider = ({ children }) => {
-    const [departments, setDepartments] = useState(() => JSON.parse(localStorage.getItem('coladmin_depts')) || dummyDepartments);
-    const [subjects, setSubjects] = useState(() => JSON.parse(localStorage.getItem('coladmin_subjects')) || dummySubjects);
-    const [professors, setProfessors] = useState(() => JSON.parse(localStorage.getItem('coladmin_profs')) || dummyProfessors.slice(0, 12));
-    const [notifications, setNotifications] = useState(() => JSON.parse(localStorage.getItem('coladmin_notifs')) || dummyNotifications);
-    const [collegeProfile, setCollegeProfile] = useState(() => JSON.parse(localStorage.getItem('coladmin_profile')) || {
-        name: "PSG College of Technology",
-        code: "PSGCT",
-        location: "Coimbatore, Tamil Nadu",
-        website: "www.psgtech.edu",
-        phone: "+91 422 257 2177",
-        email: "principal@psgtech.edu",
-        accreditation: "NAAC A++",
-        plan: "Enterprise ERP Plan",
-        founded: 1951,
-    });
+export function CollegeAdminProvider({ children }) {
+    const [departments, setDepartments] = useState([]);
+    const [subjects, setSubjects] = useState([]);
+    const [professors, setProfessors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [collegeProfile, setCollegeProfile] = useState(null);
 
-    useEffect(() => localStorage.setItem('coladmin_depts', JSON.stringify(departments)), [departments]);
-    useEffect(() => localStorage.setItem('coladmin_subjects', JSON.stringify(subjects)), [subjects]);
-    useEffect(() => localStorage.setItem('coladmin_profs', JSON.stringify(professors)), [professors]);
-    useEffect(() => localStorage.setItem('coladmin_notifs', JSON.stringify(notifications)), [notifications]);
-    useEffect(() => localStorage.setItem('coladmin_profile', JSON.stringify(collegeProfile)), [collegeProfile]);
+    const refresh = useCallback(async () => {
+        setLoading(true);
+        setError("");
+        try {
+            const [departmentData, professorData, collegeData] = await Promise.all([getDepartments(), getProfessors(), getMyCollegeProfile()]);
+            const nextDepartments = departmentData ?? [];
+            const subjectLists = await Promise.all(nextDepartments.map((department) => getSubjects(department.id)));
+            setDepartments(nextDepartments);
+            setSubjects(subjectLists.flat());
+            setProfessors(professorData ?? []);
+            setCollegeProfile(collegeData ?? null);
+        } catch (requestError) {
+            setError(requestError.message || "Unable to load college data.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-    const addDepartment = (dept) => setDepartments([{ ...dept, id: Date.now() }, ...departments]);
-    const updateDepartment = (dept) => setDepartments(departments.map(d => d.id === dept.id ? dept : d));
-    const deleteDepartment = (id) => setDepartments(departments.filter(d => d.id !== id));
+    useEffect(() => { refresh(); }, [refresh]);
 
-    const addSubject = (sub) => setSubjects([{ ...sub, id: Date.now() }, ...subjects]);
-    const updateSubject = (sub) => setSubjects(subjects.map(s => s.id === sub.id ? sub : s));
-    const deleteSubject = (id) => setSubjects(subjects.filter(s => s.id !== id));
-
-    const addProfessor = (prof) => setProfessors([{ ...prof, id: Date.now() }, ...professors]);
-    const updateProfessor = (prof) => setProfessors(professors.map(p => p.id === prof.id ? prof : p));
-    const deleteProfessor = (id) => setProfessors(professors.filter(p => p.id !== id));
-
-    const markNotificationRead = (id) => setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
-    const markAllNotificationsRead = () => setNotifications(notifications.map(n => ({ ...n, read: true })));
-    const deleteNotification = (id) => setNotifications(notifications.filter(n => n.id !== id));
-
-    const globalStats = {
-        totalDepartments: departments.length,
-        totalSubjects: subjects.length,
-        totalProfessors: professors.length,
-        reportsGenerated: dummyStats.reportsGenerated
+    const addDepartment = async ({ name }) => {
+        const created = await apiCreateDepartment({ name });
+        setDepartments((current) => [created, ...current]);
+        return created;
+    };
+    const updateDepartment = async ({ id, name }) => {
+        const updated = await apiUpdateDepartment(id, { name });
+        setDepartments((current) => current.map((department) => department.id === id ? updated : department));
+        return updated;
+    };
+    const deleteDepartment = async (id) => {
+        await apiDeleteDepartment(id);
+        setDepartments((current) => current.filter((department) => department.id !== id));
+        setSubjects((current) => current.filter((subject) => subject.departmentId !== id));
+    };
+    const addSubject = async ({ departmentId, name }) => {
+        const created = await apiCreateSubject(departmentId, { name });
+        setSubjects((current) => [created, ...current]);
+        return created;
+    };
+    const updateSubject = async ({ id, departmentId, name }) => {
+        const updated = await apiUpdateSubject(departmentId, id, { name });
+        setSubjects((current) => current.map((subject) => subject.id === id ? updated : subject));
+        return updated;
+    };
+    const deleteSubject = async (id) => {
+        const subject = subjects.find((item) => item.id === id);
+        if (!subject) return;
+        await apiDeleteSubject(subject.departmentId, id);
+        setSubjects((current) => current.filter((item) => item.id !== id));
+    };
+    const addProfessor = async (invite) => {
+        const created = await apiInviteProfessor(invite);
+        setProfessors((current) => [created, ...current]);
+        return created;
+    };
+    const deleteProfessor = async (id) => {
+        const cancelled = await apiCancelProfessorInvite(id);
+        setProfessors((current) => current.map((invite) => invite.id === id ? cancelled : invite));
+        return cancelled;
     };
 
-    return (
-        <CollegeAdminContext.Provider value={{
-            departments, addDepartment, updateDepartment, deleteDepartment,
-            subjects, addSubject, updateSubject, deleteSubject,
-            professors, addProfessor, updateProfessor, deleteProfessor,
-            notifications, markNotificationRead, markAllNotificationsRead, deleteNotification,
-            collegeProfile, setCollegeProfile,
-            stats: globalStats
-        }}>
-            {children}
-        </CollegeAdminContext.Provider>
-    );
-};
+    const updateProfile = async (profile) => {
+        const updated = await updateMyCollegeProfile({
+            name: profile.name,
+            collegeCode: profile.collegeCode ?? profile.code,
+            collegeEmail: profile.collegeEmail ?? profile.email,
+            location: profile.location,
+            address: profile.address,
+            phone: profile.phone
+        });
+        setCollegeProfile(updated);
+        return updated;
+    };
+
+    const user = getCurrentUser();
+    const departmentNames = useMemo(() => Object.fromEntries(departments.map((department) => [department.id, department.name])), [departments]);
+    const notifications = professors.map((invite) => ({
+        id: invite.id,
+        read: invite.status !== "PENDING",
+        title: invite.status === "PENDING" ? "Professor invitation pending" : "Professor invitation updated",
+        message: `${invite.name} (${invite.email}) is ${invite.status.toLowerCase()}.`,
+        time: invite.sentAt ? new Date(invite.sentAt).toLocaleDateString() : ""
+    }));
+    const value = {
+        departments, subjects, professors, loading, error, refresh,
+        addDepartment, updateDepartment, deleteDepartment,
+        addSubject, updateSubject, deleteSubject,
+        addProfessor, deleteProfessor,
+        departmentNames,
+        profile: collegeProfile ? { ...collegeProfile, code: collegeProfile.collegeCode, email: collegeProfile.collegeEmail } : { name: user?.name || "College administrator", email: user?.email || "" },
+        updateProfile, notifications,
+        stats: { totalDepartments: departments.length, totalSubjects: subjects.length, totalProfessors: professors.filter((invite) => invite.status === "ACCEPTED").length, pendingInvites: professors.filter((invite) => invite.status === "PENDING").length }
+    };
+    return <CollegeAdminContext.Provider value={value}>{children}</CollegeAdminContext.Provider>;
+}

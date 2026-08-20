@@ -1,7 +1,8 @@
 import API from "./api";
 
-export const getSubjects = async () => {
-    const response = await API.get("/subjects");
+export const getSubjects = async (departmentId) => {
+    const url = `/departments/${departmentId}/subjects`;
+    const response = await API.get(url);
     return response.data;
 };
 
@@ -10,17 +11,20 @@ export const getSubjectById = async (id) => {
     return response.data;
 };
 
-export const createSubject = async (data) => {
-    const response = await API.post("/subjects", data);
+export const createSubject = async (departmentId, data) => {
+    const url = `/departments/${departmentId}/subjects`;
+    const response = await API.post(url, data);
     return response.data;
 };
 
-export const updateSubject = async (id, data) => {
-    const response = await API.put(`/subjects/${id}`, data);
+export const updateSubject = async (departmentId, id, data) => {
+    const url = `/departments/${departmentId}/subjects/${id}`;
+    const response = await API.put(url, data);
     return response.data;
 };
 
-export const deleteSubject = async (id) => {
-    const response = await API.delete(`/subjects/${id}`);
+export const deleteSubject = async (departmentId, id) => {
+    const url = `/departments/${departmentId}/subjects/${id}`;
+    const response = await API.delete(url);
     return response.data;
 };

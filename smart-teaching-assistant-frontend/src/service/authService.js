@@ -1,16 +1,37 @@
 import API from "./api";
 
-export const loginUser = async (credentials) => {
-    const response = await API.post("/auth/login", credentials);
+const SESSION_KEY = "currentUser";
+
+export const loginUser = async (email, password) => {
+    const response = await API.post("/auth/login", { email, password });
+    const session = response.data;
+    saveSession(session);
+    return session;
+};
+
+export const getProfessorInvite = async (token) => {
+    const response = await API.get(`/professors/register/${encodeURIComponent(token)}`);
     return response.data;
 };
 
-export const registerUser = async (userData) => {
-    const response = await API.post("/auth/register", userData);
+export const registerProfessor = async (token, password) => {
+    const response = await API.post("/professors/register", { token, password });
     return response.data;
 };
 
-export const logoutUser = async () => {
-    const response = await API.post("/auth/logout");
-    return response.data;
+export const saveSession = (session) => {
+    localStorage.setItem("token", session.token);
+    localStorage.setItem("role", session.role);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+};
+
+export const logoutUser = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem(SESSION_KEY);
+};
+
+export const getCurrentUser = () => {
+    const user = localStorage.getItem(SESSION_KEY);
+    return user ? JSON.parse(user) : null;
 };

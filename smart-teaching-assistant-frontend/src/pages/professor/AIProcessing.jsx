@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle2, Loader2, Cpu } from 'lucide-react';
-import { chapters } from '../../data/mock/chapters'; // to get fallback chapter id
+import { getChaptersBySubject } from '../../service/chapterService';
 
 const steps = [
     "Uploading document",
@@ -29,10 +29,23 @@ export default function AIProcessing() {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [targetChapterId, setTargetChapterId] = useState("empty");
 
-    // Default target chapter based on the selected subject
-    const subjectChapters = chapters.filter(c => c.subjectId === subjectId);
-    const targetChapterId = subjectChapters.length > 0 ? subjectChapters[0].id : "empty";
+    useEffect(() => {
+        const fetchTargetChapter = async () => {
+            try {
+                const fetchedChapters = await getChaptersBySubject(subjectId);
+                if (fetchedChapters && fetchedChapters.length > 0) {
+                    setTargetChapterId(fetchedChapters[0].id);
+                } else {
+                    setTargetChapterId("new-chapter-placeholder");
+                }
+            } catch (err) {
+                console.error("Failed to load chapters for routing", err);
+            }
+        };
+        fetchTargetChapter();
+    }, [subjectId]);
 
     useEffect(() => {
         // Automatically progress through the steps over time

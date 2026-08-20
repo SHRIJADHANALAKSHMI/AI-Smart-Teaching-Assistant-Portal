@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../../context/ToastContext';
+import { useAuth } from '../../../context/AuthContext';
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/professor/dashboard' },
@@ -29,9 +30,11 @@ export default function ProfessorSidebar() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const navigate = useNavigate();
     const { addToast } = useToast();
+    const { logout } = useAuth();
 
     const handleLogout = () => {
         addToast("Logged out successfully.", "success");
+        logout();
         navigate('/login');
     };
 

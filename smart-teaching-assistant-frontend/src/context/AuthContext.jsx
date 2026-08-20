@@ -1,25 +1,25 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
+import { getCurrentUser, logoutUser, saveSession } from "../service/authService";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [role, setRole] = useState(localStorage.getItem("role") || null);
+    const [user, setUser] = useState(getCurrentUser());
+    const [role, setRole] = useState(getCurrentUser()?.role || null);
     const [loading] = useState(false);
 
-    const login = (userData, userRole) => {
-        setUser(userData);
-        setRole(userRole);
-        localStorage.setItem("role", userRole);
+    const login = (session) => {
+        saveSession(session);
+        setUser(session);
+        setRole(session.role);
     };
 
     const logout = () => {
         setUser(null);
         setRole(null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
+        logoutUser();
     };
 
     return (
