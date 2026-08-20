@@ -5,7 +5,7 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row justify-between items-center">
 
         <p className="text-sm text-gray-500">
-          © 2026 AI Smart Teaching Assistant Portal
+          © 2026 AI Smart Teaching Assistant Portal.
         </p>
 
         <div className="flex gap-6 mt-2 md:mt-0">
